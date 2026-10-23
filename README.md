@@ -77,4 +77,15 @@ Electron, React, xterm.js, node-pty, electron-vite. Thème Luna écrit à la mai
 
 Piste « Dossier-slash » : le dossier jaune de l'époque, la commande `/` taillée dedans. Sources dans [`design/logo/final/`](design/logo/final) : icône d'app, coupe petite taille (16–32 px), versions noire, blanche et monochrome, icônes de notification.
 
+## Licence
+
+SlashCode est publié sous [PolyForm Noncommercial 1.0.0](LICENSE.md) :
+
+- **Autorisé gratuitement** : usage personnel, études, recherche, associations, organismes publics ; lire, modifier et partager le code, à condition de garder la licence et la mention de copyright.
+- **Interdit sans accord** : tout usage commercial (utilisation dans une entreprise à but lucratif, revente, intégration dans un produit ou un service payant).
+
+**Usage commercial : licence sur demande.** Ouvre une [issue](https://github.com/ArchSeraphin/slashcode/issues) ou contacte [@ArchSeraphin](https://github.com/ArchSeraphin) sur GitHub.
+
+Les dépendances (Electron, React, xterm.js, node-pty…) gardent leurs propres licences, MIT pour la plupart.
+
 SlashCode n'est affilié ni à Anthropic ni à Microsoft. Windows XP est une marque de Microsoft.

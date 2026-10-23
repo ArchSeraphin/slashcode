@@ -5,7 +5,7 @@
   "description": "Organisateur de sessions Claude Code, façon Windows XP",
   "main": "out/main/index.js",
   "author": "VoilaVoila",
-  "license": "UNLICENSED",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "private": true,
   "scripts": {
     "dev": "electron-vite dev",
