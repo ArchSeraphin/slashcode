@@ -8,11 +8,13 @@
   "license": "PolyForm-Noncommercial-1.0.0",
   "private": true,
   "scripts": {
-    "dev": "electron-vite dev",
-    "build": "electron-vite build",
+    "dev": "npm run native && electron-vite dev",
+    "build": "electron-vite build && npm run native",
+    "native": "[ out/native/SlashCodeDictee.app/Contents/MacOS/slashcode-dictate -nt src/native/dictate.swift ] || npm run build:native",
+    "build:native": "sh src/native/build.sh",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "postinstall": "chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper",
-    "dist": "electron-vite build && electron-builder --mac --arm64 --dir"
+    "dist": "npm run build && electron-builder --mac --arm64 --dir"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
@@ -53,7 +55,8 @@
       "package.json"
     ],
     "asarUnpack": [
-      "node_modules/node-pty/**"
+      "node_modules/node-pty/**",
+      "out/native/**"
     ],
     "npmRebuild": false,
     "mac": {
@@ -69,7 +72,9 @@
       "icon": "build/icon.png",
       "identity": null,
       "extendInfo": {
-        "NSUserNotificationAlertStyle": "alert"
+        "NSUserNotificationAlertStyle": "alert",
+        "NSMicrophoneUsageDescription": "SlashCode écoute le micro pendant la dictée d’un prompt.",
+        "NSSpeechRecognitionUsageDescription": "SlashCode transforme ta voix en texte pour écrire les prompts."
       }
     }
   }

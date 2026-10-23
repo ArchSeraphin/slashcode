@@ -14,6 +14,9 @@ Quand on jongle avec cinq ou six projets et plusieurs sessions Claude dans chacu
 - **Import en un clic** : au premier lancement, SlashCode liste tous les dossiers où Claude Code a déjà servi (`~/.claude/projects`).
 - **Sessions = vrais terminaux** (xterm.js + node-pty) qui lancent `claude` : toutes les fonctions du CLI restent disponibles. Les onglets survivent au changement de projet, et après un redémarrage « Tout reprendre » relance chaque conversation (`claude --resume`).
 - **Choix du modèle en un clic** (Fable, Opus, Sonnet, Haiku), modèle et mode d'autorisation par défaut propres à chaque projet.
+- **Écran partagé** : 1, 2, 3 ou 4 sessions du projet à l'écran (`⌥⌘1` … `⌥⌘4` ou les boutons de disposition). Chaque volet est une petite fenêtre avec sa barre de titre ; un clic lui donne le focus, et un onglet masqué choisi prend la place du volet actif.
+- **Dictée** (`⌘D` ou le bouton micro) : tu parles, le texte s'affiche en direct, `↩` l'envoie à Claude, `⌘D` l'insère sans l'envoyer, et on peut le corriger avant. Reconnaissance vocale d'Apple sur le Mac (SpeechAnalyzer de macOS 26, sans Siri ni connexion), en français par défaut.
+- **Mode sombre** façon Royale Noir, le thème noir de XP (Affichage > Mode sombre, ou Paramètres > Apparence : clair, sombre ou comme macOS).
 - **Tâches** par projet : le bouton ▶ lance une tâche comme premier message d'une nouvelle session, ➤ l'écrit dans la session active.
 - **Notes** par projet, enregistrées automatiquement, envoyables à la session active.
 - **Historique** des conversations Claude du dossier, reprise en un clic.
@@ -51,6 +54,8 @@ Pour développer : `npm run dev` (rechargement à chaud) et `npm run typecheck`.
 | `⌘1` … `⌘9` | N-ième onglet du projet |
 | `⌘J` | Afficher ou masquer Tâches & notes |
 | `⇧↩` | Nouvelle ligne dans le prompt Claude |
+| `⌥⌘1` … `⌥⌘4` | Afficher 1, 2, 3 ou 4 sessions à l'écran |
+| `⌘D` | Dicter un prompt (`⌘D` à nouveau pour l'insérer) |
 
 ## Comment marchent les notifications
 
@@ -59,6 +64,10 @@ Pour développer : `npm run dev` (rechargement à chaud) et `npm run typecheck`.
 Le contenu dit ce qui se passe : pour une autorisation, l'outil et la commande ou le fichier visé ; pour une fin de tour, le début de la réponse de Claude, le modèle et la durée.
 
 Fermer la fenêtre avec des sessions en cours propose de les garder en arrière-plan : les notifications continuent d'arriver.
+
+## Dictée
+
+Le module `src/native/dictate.swift` est compilé par `npm run build` (il faut les outils Xcode, `swiftc`) en un petit bundle `SlashCodeDictee.app`, lancé par SlashCode le temps d'une dictée. Il se déclare responsable de ses propres autorisations : à la première dictée, macOS demande l'accès au micro (et, avant macOS 26, à la reconnaissance vocale) pour « SlashCode Dictée ». Sur macOS 26 et plus, le modèle de langue est téléchargé une seule fois, puis tout se passe sur le Mac. La langue se règle dans Paramètres > Dictée.
 
 ### Sur l'iPhone
 

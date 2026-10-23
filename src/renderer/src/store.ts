@@ -2,12 +2,14 @@ import { useSyncExternalStore } from 'react'
 import type { Api } from '../../preload'
 import type {
   AppData,
+  DictationEvent,
   Group,
   LaunchOptions,
   LiveSession,
   Note,
   Project,
   SessionRecord,
+  SplitCount,
   Task,
   Usage
 } from '@shared/types'
@@ -45,10 +47,23 @@ export interface Balloon {
   tone: 'warning' | 'done'
 }
 
+export interface Dictation {
+  sessionId: string
+  // starting: waiting for the microphone; listening: recording; stopping: flushing the last words;
+  // editing: the text can be corrected before it goes into the prompt
+  phase: 'starting' | 'listening' | 'stopping' | 'editing' | 'error'
+  text: string
+  level: number
+  installing: boolean // the language model is being downloaded
+  error: string
+  then: 'insert' | 'send' | null // what to do once the final text arrives
+}
+
 export interface UIState {
   view: 'home' | 'project'
   projectId: string | null
-  activeSession: Record<string, string> // projectId -> sessionId
+  activeSession: Record<string, string> // projectId -> sessionId (the focused pane)
+  panes: Record<string, string[]> // projectId -> sessions on screen, pane by pane
   sideTab: SideTab
   sideOpen: boolean
   dialog: DialogState | null
@@ -57,6 +72,7 @@ export interface UIState {
   focused: boolean
   maximized: boolean
   search: string
+  dictation: Dictation | null
 }
 
 export interface State {
@@ -74,6 +90,7 @@ let state: State = {
     view: 'home',
     projectId: null,
     activeSession: {},
+    panes: {},
     sideTab: 'tasks',
     sideOpen: true,
     dialog: null,
@@ -81,7 +98,8 @@ let state: State = {
     balloon: null,
     focused: true,
     maximized: false,
-    search: ''
+    search: '',
+    dictation: null
   }
 }
 
@@ -251,6 +269,7 @@ export function closeSession(sessionId: string, force = false): void {
   const live = state.live[sessionId]
   const running = live && live.status !== 'exited'
   const doClose = () => {
+    if (state.ui.dictation?.sessionId === sessionId) cancelDictation()
     api.kill(sessionId)
     dropLive(sessionId)
     const rec = state.data?.sessions.find((s) => s.id === sessionId)
@@ -291,6 +310,143 @@ export function renameSession(sessionId: string, title: string): void {
   const clean = title.trim()
   if (!clean) return
   updateData((d) => ({ ...d, sessions: d.sessions.map((s) => (s.id === sessionId ? { ...s, title: clean } : s)) }))
+}
+
+/* ---------------- split view ---------------- */
+
+export function splitOf(project: Project | undefined): SplitCount {
+  return project?.split ?? 1
+}
+
+export function setSplit(projectId: string, n: SplitCount): void {
+  patchProject(projectId, { split: n })
+}
+
+/**
+ * Which session goes in which pane. Panes keep their session while it stays open, and a
+ * closed one is replaced in place; a session brought forward from a hidden tab takes the
+ * pane that had the focus. When the layout grows, panes follow the order of the tabs.
+ */
+export function layoutPanes(
+  prev: string[] | undefined,
+  tabs: string[],
+  active: string | undefined,
+  n: number,
+  prevActive: string | undefined
+): string[] {
+  const before = (prev ?? []).slice(0, n)
+  const panes: (string | null)[] = before.map((id) => (tabs.includes(id) ? id : null))
+  if (active && tabs.includes(active) && !panes.includes(active)) {
+    const i = prevActive ? before.indexOf(prevActive) : -1
+    const hole = panes.indexOf(null)
+    if (i >= 0) panes[i] = active
+    else if (hole >= 0) panes[hole] = active
+    else if (panes.length < n) panes.push(active)
+    else panes[panes.length - 1] = active
+  }
+  const rest = tabs.filter((id) => !panes.includes(id))
+  for (let i = 0; i < panes.length && rest.length; i++) if (!panes[i]) panes[i] = rest.shift()!
+  while (panes.length < n && rest.length) panes.push(rest.shift()!)
+  const out = panes.filter((id): id is string => Boolean(id))
+  if (before.length < n) out.sort((a, b) => tabs.indexOf(a) - tabs.indexOf(b))
+  return out
+}
+
+export function focusSession(projectId: string, sessionId: string): void {
+  if (state.ui.activeSession[projectId] !== sessionId) {
+    setUI((ui) => ({ activeSession: { ...ui.activeSession, [projectId]: sessionId } }))
+  }
+  if (state.live[sessionId]?.attention) api.ack(sessionId)
+}
+
+/* ---------------- dictation ---------------- */
+
+/** ⌘D: starts dictating into the focused session, or finishes the dictation under way. */
+export function toggleDictation(sessionId?: string): void {
+  const d = state.ui.dictation
+  if (d) {
+    if (d.phase === 'editing') return commitDictation(false)
+    if (d.phase === 'error') return cancelDictation()
+    return stopDictation('insert')
+  }
+  const pid = state.ui.view === 'project' ? state.ui.projectId : null
+  const sid = sessionId ?? (pid ? state.ui.activeSession[pid] : undefined)
+  if (!sid || !state.data) return
+  setUI({ dictation: { sessionId: sid, phase: 'starting', text: '', level: 0, installing: false, error: '', then: null } })
+  api.dictationStart(state.data.settings.dictationLang)
+}
+
+function patchDictation(patch: Partial<Dictation>): void {
+  setUI((ui) => (ui.dictation ? { dictation: { ...ui.dictation, ...patch } } : {}))
+}
+
+/** Stops listening; the text is then inserted, sent, or left for corrections. */
+export function stopDictation(then: Dictation['then'] = null): void {
+  const d = state.ui.dictation
+  if (!d) return
+  if (d.phase === 'starting') return cancelDictation()
+  if (d.phase === 'editing') return then ? commitDictation(then === 'send') : undefined
+  patchDictation({ phase: 'stopping', then })
+  api.dictationStop()
+}
+
+export function cancelDictation(): void {
+  const d = state.ui.dictation
+  if (!d) return
+  api.dictationCancel()
+  setUI({ dictation: null })
+  refocus(d.sessionId)
+}
+
+export function editDictation(text: string): void {
+  patchDictation({ text })
+}
+
+/** Types the dictated text into the session's prompt, and presses Enter when asked to. */
+export function commitDictation(send: boolean): void {
+  const d = state.ui.dictation
+  if (!d) return
+  api.dictationCancel()
+  setUI({ dictation: null })
+  const text = d.text.trim()
+  const live = state.live[d.sessionId]
+  if (text && live && live.status !== 'exited') {
+    api.write(d.sessionId, `\x1b[200~${text}\x1b[201~`)
+    // Claude reads a paste and the Enter that follows it as one chunk if they arrive together.
+    if (send) setTimeout(() => api.write(d.sessionId, '\r'), 120)
+  }
+  refocus(d.sessionId)
+}
+
+export function onDictationEvent(e: DictationEvent): void {
+  const d = state.ui.dictation
+  if (!d) return
+  switch (e.type) {
+    case 'installing':
+      return patchDictation({ installing: true })
+    case 'ready':
+      if (d.phase === 'starting') patchDictation({ phase: 'listening', installing: false })
+      return
+    case 'level':
+      return patchDictation({ level: e.value })
+    case 'partial':
+      if (d.phase !== 'editing') patchDictation({ text: e.text })
+      return
+    case 'final':
+      if (d.phase === 'editing') return
+      patchDictation({ text: e.text, phase: 'editing', level: 0 })
+      if (d.then) commitDictation(d.then === 'send')
+      return
+    case 'error':
+      if (d.phase === 'editing') return
+      return patchDictation({ phase: 'error', error: e.message, level: 0 })
+  }
+}
+
+// Set by the terminal module, which imports this one.
+let refocus: (sessionId: string) => void = () => {}
+export function setRefocus(fn: (sessionId: string) => void): void {
+  refocus = fn
 }
 
 /* ---------------- projects & groups ---------------- */

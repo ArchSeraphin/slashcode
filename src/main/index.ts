@@ -5,6 +5,7 @@ import { homedir } from 'os'
 import { join } from 'path'
 import { Store } from './store'
 import { SessionManager } from './sessions'
+import { Dictation } from './dictation'
 import { discoverFolders, encodeProjectDir, lastReply, listHistory } from './history'
 import { pushPhone } from './push'
 import type { AppData, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
@@ -40,6 +41,8 @@ const sessions = new SessionManager({
     win?.webContents.send('usage:update', next)
   }
 })
+
+const dictation = new Dictation((e) => win?.webContents.send('dictation:event', e))
 
 // Plan limits only arrive while a session runs, so keep the last ones for the next launch.
 let usage: Usage | null = null
@@ -182,6 +185,7 @@ function createWindow(): void {
     }
     quitting = true
     store.flush()
+    dictation.cancel()
     sessions.killAll()
     app.quit()
   })
@@ -218,7 +222,9 @@ function buildMenu(): void {
           { label: 'Nouveau projet…', accelerator: 'Cmd+Shift+N', click: send('new-project') },
           { label: 'Importer depuis Claude…', accelerator: 'Cmd+I', click: send('import') },
           { type: 'separator' },
-          { label: 'Fermer la session', accelerator: 'Cmd+W', click: send('close-session') }
+          { label: 'Fermer la session', accelerator: 'Cmd+W', click: send('close-session') },
+          { type: 'separator' },
+          { label: 'Dicter un prompt', accelerator: 'Cmd+D', click: send('dictate') }
         ]
       },
       {
@@ -243,6 +249,11 @@ function buildMenu(): void {
           { label: 'Session précédente', accelerator: 'Cmd+Shift+[', click: send('prev-session') },
           { label: 'Session suivante', accelerator: 'Cmd+Shift+]', click: send('next-session') },
           { label: 'Prochaine session en attente', accelerator: 'Cmd+Shift+A', click: send('next-attention') },
+          { type: 'separator' },
+          { label: 'Une session', accelerator: 'Alt+Cmd+1', click: send('split-1') },
+          { label: 'Deux sessions côte à côte', accelerator: 'Alt+Cmd+2', click: send('split-2') },
+          { label: 'Trois sessions', accelerator: 'Alt+Cmd+3', click: send('split-3') },
+          { label: 'Quatre sessions', accelerator: 'Alt+Cmd+4', click: send('split-4') },
           { type: 'separator' },
           { role: 'zoomIn', label: 'Agrandir' },
           { role: 'zoomOut', label: 'Réduire' },
@@ -328,6 +339,10 @@ function registerIpc(): void {
     visibleSessionId = id
     if (id && win?.isFocused()) sessions.acknowledge(id)
   })
+
+  ipcMain.on('dictation:start', (_e, lang: string) => dictation.start(lang))
+  ipcMain.on('dictation:stop', () => dictation.stop())
+  ipcMain.on('dictation:cancel', () => dictation.cancel())
 
   ipcMain.handle('history:list', (_e, path: string) => listHistory(path))
   ipcMain.handle('history:discover', () => discoverFolders(new Set(store.data.projects.map((p) => p.path))))

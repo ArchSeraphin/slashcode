@@ -33,6 +33,11 @@ export type IconName =
   | 'bell'
   | 'logo'
   | 'up'
+  | 'mic'
+  | 'layout1'
+  | 'layout2'
+  | 'layout3'
+  | 'layout4'
 
 // Every icon is drawn on a 32×32 grid with the soft gradients and dark outlines of the Luna era.
 const D: Record<IconName, JSX.Element> = {
@@ -298,6 +303,55 @@ const D: Record<IconName, JSX.Element> = {
     <>
       <path d="M2 9c0-1 .8-1.8 1.8-1.8h7.4l2.6 2.6h14.4c1 0 1.8.8 1.8 1.8v14c0 1-.8 1.8-1.8 1.8H3.8c-1 0-1.8-.8-1.8-1.8z" fill="#f2c14e" stroke="#b98a1c" />
       <path d="M16 23V13M11.5 17.5l4.5-4.5 4.5 4.5" stroke="#2a8c2e" strokeWidth="2.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  mic: (
+    <>
+      <defs>
+        <linearGradient id="mic-a" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#8a929e" />
+          <stop offset=".45" stopColor="#f4f6f9" />
+          <stop offset="1" stopColor="#7d8591" />
+        </linearGradient>
+      </defs>
+      <rect x="11" y="2.5" width="10" height="17" rx="5" fill="url(#mic-a)" stroke="#4a515c" />
+      <path d="M12.5 8h7M12.5 11h7M12.5 14h7" stroke="#5e6672" strokeWidth=".9" />
+      <path d="M7.5 15a8.5 8.5 0 0 0 17 0" fill="none" stroke="#3d4450" strokeWidth="2" strokeLinecap="round" />
+      <path d="M16 23.5v4.5M10.5 29h11" stroke="#3d4450" strokeWidth="2.2" strokeLinecap="round" />
+    </>
+  ),
+  layout1: (
+    <>
+      <rect x="2.5" y="4.5" width="27" height="23" rx="2" fill="#dfe8fb" stroke="#2a4f99" />
+      <rect x="2.5" y="4.5" width="27" height="4" rx="2" fill="#2f6be6" />
+      <rect x="5" y="10.5" width="22" height="14.5" fill="#0d0d0d" stroke="#45505f" />
+    </>
+  ),
+  layout2: (
+    <>
+      <rect x="2.5" y="4.5" width="27" height="23" rx="2" fill="#dfe8fb" stroke="#2a4f99" />
+      <rect x="2.5" y="4.5" width="27" height="4" rx="2" fill="#2f6be6" />
+      <rect x="5" y="10.5" width="10.5" height="14.5" fill="#0d0d0d" stroke="#45505f" />
+      <rect x="16.5" y="10.5" width="10.5" height="14.5" fill="#0d0d0d" stroke="#45505f" />
+    </>
+  ),
+  layout3: (
+    <>
+      <rect x="2.5" y="4.5" width="27" height="23" rx="2" fill="#dfe8fb" stroke="#2a4f99" />
+      <rect x="2.5" y="4.5" width="27" height="4" rx="2" fill="#2f6be6" />
+      <rect x="5" y="10.5" width="10.5" height="14.5" fill="#0d0d0d" stroke="#45505f" />
+      <rect x="16.5" y="10.5" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f" />
+      <rect x="16.5" y="18.25" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f" />
+    </>
+  ),
+  layout4: (
+    <>
+      <rect x="2.5" y="4.5" width="27" height="23" rx="2" fill="#dfe8fb" stroke="#2a4f99" />
+      <rect x="2.5" y="4.5" width="27" height="4" rx="2" fill="#2f6be6" />
+      <rect x="5" y="10.5" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f" />
+      <rect x="16.5" y="10.5" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f" />
+      <rect x="5" y="18.25" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f" />
+      <rect x="16.5" y="18.25" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f" />
     </>
   )
 }

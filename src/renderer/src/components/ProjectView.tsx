@@ -1,29 +1,46 @@
 import { useEffect, useRef, useState } from 'react'
-import { MODELS, PERMISSIONS, type ModelId, type PermissionMode, type Project } from '@shared/types'
+import { MODELS, PERMISSIONS, type ModelId, type PermissionMode, type Project, type SplitCount } from '@shared/types'
 import {
   api,
   closeSession,
+  focusSession,
   goHome,
+  layoutPanes,
   newSession,
   patchProject,
   renameSession,
+  setSplit,
   setUI,
   shortPath,
+  splitOf,
   useStore
 } from '../store'
 import { Icon } from './Icon'
 import { useMenu, type MenuItem } from './Menu'
 import { SidePanel } from './SidePanel'
-import { Stage } from './Stage'
+import { paneStyle, Stage } from './Stage'
 import { StatusIcon, statusLabel } from './StatusIcon'
 
 export function ProjectView({ hidden }: { hidden: boolean }) {
   const project = useStore((s) => s.data!.projects.find((p) => p.id === s.ui.projectId))
   const activeId = useStore((s) => (s.ui.projectId ? s.ui.activeSession[s.ui.projectId] : undefined))
+  const storedPanes = useStore((s) => (s.ui.projectId ? s.ui.panes[s.ui.projectId] : undefined))
   const sessions = useStore((s) => s.data!.sessions)
   const sideOpen = useStore((s) => s.ui.sideOpen)
   const tabs = project ? sessions.filter((s) => s.projectId === project.id && s.open) : []
+  const split = splitOf(project)
   const visibleId = !hidden && activeId && tabs.some((t) => t.id === activeId) ? activeId : null
+
+  // Remembers which pane had the focus, so a session picked from a hidden tab replaces that one.
+  const lastActive = useRef<Record<string, string | undefined>>({})
+  const tabIds = tabs.map((t) => t.id)
+  const panes = project ? layoutPanes(storedPanes, tabIds, activeId, split, lastActive.current[project.id]) : []
+
+  useEffect(() => {
+    if (!project) return
+    lastActive.current[project.id] = activeId
+    if (panes.join() !== (storedPanes ?? []).join()) setUI((ui) => ({ panes: { ...ui.panes, [project.id]: panes } }))
+  })
 
   // Fall back to the last tab when the remembered one was closed.
   useEffect(() => {
@@ -41,9 +58,14 @@ export function ProjectView({ hidden }: { hidden: boolean }) {
       {project && <ProjectChrome project={project} />}
       <div className="workspace">
         <div className="center">
-          {project && <SessionTabs project={project} activeId={visibleId} />}
+          {project && <SessionTabs project={project} activeId={visibleId} panes={split > 1 ? panes : []} />}
           <div className="stage-frame">
-            <Stage visibleId={visibleId} />
+            <Stage panes={hidden ? [] : panes} split={split} focusedId={visibleId} />
+            {project &&
+              tabs.length > 0 &&
+              Array.from({ length: split - panes.length }, (_, i) => (
+                <EmptyPane key={i} project={project} slot={panes.length + i} split={split} />
+              ))}
             {project && !tabs.length && <Launcher project={project} />}
           </div>
         </div>
@@ -52,6 +74,26 @@ export function ProjectView({ hidden }: { hidden: boolean }) {
     </div>
   )
 }
+
+/** A pane with no session yet: one click fills it. */
+function EmptyPane({ project, slot, split }: { project: Project; slot: number; split: number }) {
+  return (
+    <div className="empty-pane" style={paneStyle(slot, split)}>
+      <Icon name="console" size={32} />
+      <button className="btn" onClick={() => newSession(project.id)}>
+        <Icon name="plus" size={13} /> Nouvelle session
+      </button>
+      <span className="hint">ou ⌘T · les onglets ouverts viennent se placer ici</span>
+    </div>
+  )
+}
+
+const LAYOUTS: { n: SplitCount; label: string }[] = [
+  { n: 1, label: 'Une session' },
+  { n: 2, label: 'Deux sessions côte à côte' },
+  { n: 3, label: 'Trois sessions' },
+  { n: 4, label: 'Quatre sessions' }
+]
 
 function ProjectChrome({ project }: { project: Project }) {
   const menu = useMenu()
@@ -118,6 +160,19 @@ function ProjectChrome({ project }: { project: Project }) {
         <button className="tb" onClick={() => api.openApp('Terminal', project.path)} title="Ouvrir dans le Terminal">
           <Icon name="console" size={22} />
         </button>
+        <span className="tb-sep" />
+        <div className="tb-group" role="group" aria-label="Disposition">
+          {LAYOUTS.map((l) => (
+            <button
+              key={l.n}
+              className={'tb icon' + (splitOf(project) === l.n ? ' on' : '')}
+              onClick={() => setSplit(project.id, l.n)}
+              title={`${l.label} (⌥⌘${l.n})`}
+            >
+              <Icon name={`layout${l.n}`} size={20} />
+            </button>
+          ))}
+        </div>
         <span style={{ flex: 1 }} />
         <button className={'tb' + (sideOpen ? ' on' : '')} onClick={() => setUI({ sideOpen: !sideOpen })} title="Tâches et notes (⌘J)">
           <Icon name="tasks" size={22} /> Tâches & notes
@@ -138,7 +193,7 @@ function ProjectChrome({ project }: { project: Project }) {
   )
 }
 
-function SessionTabs({ project, activeId }: { project: Project; activeId: string | null }) {
+function SessionTabs({ project, activeId, panes }: { project: Project; activeId: string | null; panes: string[] }) {
   const sessions = useStore((s) => s.data!.sessions)
   const live = useStore((s) => s.live)
   const tabs = sessions.filter((s) => s.projectId === project.id && s.open)
@@ -153,11 +208,15 @@ function SessionTabs({ project, activeId }: { project: Project; activeId: string
         return (
           <div
             key={t.id}
-            className={'tab' + (t.id === activeId ? ' active' : '') + (l?.attention && t.id !== activeId ? ' attention' : '')}
+            className={
+              'tab' +
+              (t.id === activeId ? ' active' : panes.includes(t.id) ? ' shown' : '') +
+              (l?.attention && t.id !== activeId ? ' attention' : '')
+            }
             onMouseDown={(e) => {
               if (e.button === 1) closeSession(t.id)
             }}
-            onClick={() => setUI((ui) => ({ activeSession: { ...ui.activeSession, [project.id]: t.id } }))}
+            onClick={() => focusSession(project.id, t.id)}
             onDoubleClick={() => setEditing(t.id)}
             onContextMenu={(e) => {
               e.preventDefault()
@@ -219,7 +278,7 @@ function Launcher({ project }: { project: Project }) {
   return (
     <div className="launcher">
       <h1>{project.name}</h1>
-      <div style={{ color: '#666' }}>{shortPath(project.path)}</div>
+      <div style={{ color: 'var(--muted)' }}>{shortPath(project.path)}</div>
       <div className="model-cards">
         {MODELS.filter((m) => m.id !== 'default').map((m) => (
           <button key={m.id} className="model-card" onClick={() => newSession(project.id, { model: m.id })}>
@@ -239,7 +298,7 @@ function Launcher({ project }: { project: Project }) {
                 <Icon name="history" size={20} />
                 <div className="grow">
                   <b>{h.title}</b>
-                  <div style={{ color: '#777' }}>{new Date(h.updatedAt).toLocaleString('fr-FR')}</div>
+                  <div style={{ color: 'var(--faint)' }}>{new Date(h.updatedAt).toLocaleString('fr-FR')}</div>
                 </div>
                 <button className="btn" onClick={() => newSession(project.id, { resumeId: h.id, title: h.title })}>
                   <Icon name="play" size={14} /> Reprendre

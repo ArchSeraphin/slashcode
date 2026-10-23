@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { EFFORTS, MODELS, PERMISSIONS, type DiscoveredFolder, type Effort, type ModelId, type PermissionMode } from '@shared/types'
+import { DICTATION_LANGS, EFFORTS, MODELS, PERMISSIONS, type Appearance, type DiscoveredFolder, type Effort, type ModelId, type PermissionMode } from '@shared/types'
 import {
   addGroup,
   addProjects,
@@ -208,7 +208,7 @@ function SettingsDialog() {
           <button className="btn" onClick={() => api.openNotificationSettings()}>
             Réglages macOS…
           </button>
-          {testMsg && <span style={{ color: '#555' }}>{testMsg}</span>}
+          {testMsg && <span style={{ color: 'var(--muted)' }}>{testMsg}</span>}
         </div>
       </fieldset>
       <fieldset>
@@ -290,11 +290,40 @@ function SettingsDialog() {
           <button className="btn" disabled={!settings.phoneEnabled} onClick={() => test(true)}>
             <Icon name="send" size={14} /> Envoyer un test
           </button>
-          {phoneMsg && <span style={{ color: phoneMsg.startsWith('Reçu') ? '#1d6d22' : '#b00' }}>{phoneMsg}</span>}
+          {phoneMsg && <span style={{ color: phoneMsg.startsWith('Reçu') ? 'var(--ok)' : 'var(--error)' }}>{phoneMsg}</span>}
         </div>
         <div className="hint" style={{ margin: '6px 0 0' }}>
           La notification contient le projet, la session, l’action demandée (commande ou fichier) ou le début de la
           réponse de Claude. Elle passe par ton serveur puis par Apple, comme toute notification iPhone.
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Dictée</legend>
+        <div className="row">
+          <label>Langue</label>
+          <select value={settings.dictationLang} onChange={(e) => set({ dictationLang: e.target.value })}>
+            {DICTATION_LANGS.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="hint">
+          ⌘D ou le bouton micro d’une session : tu parles, le texte s’affiche, ↩ l’envoie à Claude. La reconnaissance
+          vocale d’Apple tourne sur le Mac quand la langue y est installée. À la première dictée, macOS demande l’accès
+          au micro et à la reconnaissance vocale.
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Apparence</legend>
+        <div className="row">
+          <label>Thème des fenêtres</label>
+          <select value={settings.appearance} onChange={(e) => set({ appearance: e.target.value as Appearance })}>
+            <option value="light">Luna (clair)</option>
+            <option value="dark">Royale Noir (sombre)</option>
+            <option value="system">Comme macOS</option>
+          </select>
         </div>
       </fieldset>
       <fieldset>
@@ -553,7 +582,7 @@ function ProjectDialog({ dialog }: { dialog: Extract<DialogState, { kind: 'proje
         </div>
       </div>
       {error && (
-        <div className="message" style={{ color: '#b00' }}>
+        <div className="message" style={{ color: 'var(--error)' }}>
           <Icon name="warning" size={16} /> {error}
         </div>
       )}
@@ -742,6 +771,8 @@ function Shortcuts() {
     ['⌘⇧[ / ⌘⇧]', 'Session précédente / suivante'],
     ['⌘1 … ⌘9', 'Aller au n-ième onglet du projet'],
     ['⌘J', 'Afficher ou masquer Tâches & notes'],
+    ['⌥⌘1 … ⌥⌘4', 'Afficher 1, 2, 3 ou 4 sessions à l’écran'],
+    ['⌘D', 'Dicter un prompt (⌘D à nouveau pour l’insérer)'],
     ['⌘⇧H', 'Poste de travail'],
     ['⌘⇧N', 'Nouveau projet'],
     ['⌘I', 'Importer depuis Claude'],
@@ -763,14 +794,14 @@ function Shortcuts() {
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <tbody>
           {rows.map(([k, v]) => (
-            <tr key={k} style={{ borderBottom: '1px dotted #ddd' }}>
+            <tr key={k} style={{ borderBottom: '1px dotted var(--line)' }}>
               <td style={{ padding: '4px 10px 4px 0', whiteSpace: 'nowrap', fontWeight: 'bold' }}>{k}</td>
               <td style={{ padding: '4px 0' }}>{v}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p style={{ color: '#666' }}>
+      <p style={{ color: 'var(--muted)' }}>
         Les notifications viennent des hooks de Claude Code : SlashCode est prévenu quand Claude demande une autorisation
         ou a fini son tour, même si la fenêtre est cachée. Rien n’est modifié dans ta configuration Claude.
       </p>

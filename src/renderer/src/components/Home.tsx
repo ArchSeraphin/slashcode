@@ -90,7 +90,7 @@ export function Home() {
                 <StatusIcon live={live[s.id]} size={22} />
                 <div className="grow">
                   <b>{projectsById.get(s.projectId)?.name}</b> · {s.title}
-                  <div style={{ color: '#7a5a20' }}>{statusLabel(live[s.id])}</div>
+                  <div style={{ color: 'var(--warn-text)' }}>{statusLabel(live[s.id])}</div>
                 </div>
                 <button className="btn default" onClick={() => gotoSession(s.id)}>
                   Y aller
@@ -163,7 +163,7 @@ export function Home() {
                     <button className="link" style={{ fontWeight: 'bold' }} onClick={() => openProject(pid)}>
                       {p.name}
                     </button>
-                    <span style={{ marginLeft: 'auto', fontWeight: 'normal', color: '#6a7fb8' }}>{tasks.length}</span>
+                    <span style={{ marginLeft: 'auto', fontWeight: 'normal', color: 'var(--count)' }}>{tasks.length}</span>
                   </header>
                   {tasks.slice(0, 5).map((t) => (
                     <div key={t.id} className="task">
@@ -179,7 +179,7 @@ export function Home() {
                     </div>
                   ))}
                   {tasks.length > 5 && (
-                    <div style={{ padding: '2px 8px 6px', color: '#777' }}>
+                    <div style={{ padding: '2px 8px 6px', color: 'var(--faint)' }}>
                       et {tasks.length - 5} autre{tasks.length - 5 > 1 ? 's' : ''}…
                     </div>
                   )}
@@ -215,7 +215,7 @@ export function Home() {
               Ajouter un dossier
             </button>
           </p>
-          <p style={{ color: '#999' }}>Astuce : glisse un dossier du Finder sur un groupe à gauche.</p>
+          <p style={{ color: 'var(--faint)' }}>Astuce : glisse un dossier du Finder sur un groupe à gauche.</p>
         </div>
       )}
     </div>

@@ -238,7 +238,7 @@ function Notes({ project }: { project: Project }) {
         placeholder="Idées, liens, consignes à donner à Claude…"
         onChange={(e) => patchNote(note.id, { body: e.target.value })}
       />
-      <div style={{ padding: '0 8px 6px', color: '#888' }}>Enregistré automatiquement · modifié {timeAgo(note.updatedAt)}</div>
+      <div style={{ padding: '0 8px 6px', color: 'var(--faint)' }}>Enregistré automatiquement · modifié {timeAgo(note.updatedAt)}</div>
     </>
   )
 }
@@ -256,7 +256,7 @@ function History({ project }: { project: Project }) {
   return (
     <>
       <div className="note-bar">
-        <span style={{ flex: 1, color: '#555' }}>Conversations Claude de ce dossier</span>
+        <span style={{ flex: 1, color: 'var(--muted)' }}>Conversations Claude de ce dossier</span>
         <button className="mini" title="Actualiser" onClick={load}>
           <Icon name="refresh" size={14} />
         </button>

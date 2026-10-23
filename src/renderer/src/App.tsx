@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import {
   allOpenSessions,
   api,
@@ -7,13 +7,17 @@ import {
   gotoSession,
   goHome,
   newSession,
+  onDictationEvent,
   openSessionsOf,
+  setSplit,
   setLive,
   setUsage,
   setUI,
+  toggleDictation,
   updateData,
   useStore
 } from './store'
+import type { SplitCount } from '@shared/types'
 import { chime } from './sound'
 import { Dialogs, currentProjectId } from './components/Dialogs'
 import { Home } from './components/Home'
@@ -75,14 +79,37 @@ function runMenu(action: string): void {
       return cycle(1)
     case 'next-attention':
       return nextAttention()
+    case 'dictate':
+      return toggleDictation()
+    case 'split-1':
+    case 'split-2':
+    case 'split-3':
+    case 'split-4':
+      if (pid) setSplit(pid, Number(action.slice(6)) as SplitCount)
+      return
   }
 }
 
 export function App() {
   const ui = useStore((s) => s.ui)
   const projectName = useStore((s) => s.data!.projects.find((p) => p.id === s.ui.projectId)?.name)
+  const split = useStore((s) => s.data!.projects.find((p) => p.id === s.ui.projectId)?.split)
+  const appearance = useStore((s) => s.data!.settings.appearance)
   const menu = useMenu()
   const bar = useRef<HTMLDivElement>(null)
+
+  // Before paint, so a dark start never flashes Luna. "system" follows macOS live.
+  useLayoutEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const apply = () => {
+      const dark = appearance === 'dark' || (appearance === 'system' && mq.matches)
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+    }
+    apply()
+    if (appearance !== 'system') return
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [appearance])
 
   useEffect(() => {
     const offs = [
@@ -119,6 +146,7 @@ export function App() {
         if (st.data?.settings.notifySound) chime(tone)
       }),
       api.onGoto((id) => gotoSession(id)),
+      api.onDictation(onDictationEvent),
       api.onMenu(runMenu),
       api.onMaximized((maximized) => setUI({ maximized })),
       api.onFocus((focused) => setUI({ focused }))
@@ -151,16 +179,35 @@ export function App() {
       { label: 'Importer depuis Claude…', shortcut: '⌘I', icon: <Icon name="import" />, onClick: () => runMenu('import') },
       { sep: true },
       { label: 'Fermer la session', shortcut: '⌘W', onClick: () => runMenu('close-session') },
+      { label: 'Dicter un prompt', shortcut: '⌘D', icon: <Icon name="mic" />, onClick: () => runMenu('dictate') },
       { label: 'Quitter', shortcut: '⌘Q', icon: <Icon name="power" />, onClick: () => api.close() }
     ],
     Affichage: [
       { label: 'Poste de travail', shortcut: '⌘⇧H', icon: <Icon name="computer" />, onClick: goHome },
       { label: 'Exécuter…', shortcut: '⌘K', icon: <Icon name="run" />, onClick: () => runMenu('palette') },
       { label: 'Tâches & notes', shortcut: '⌘J', checked: ui.sideOpen, onClick: () => runMenu('toggle-side') },
+      {
+        label: 'Mode sombre',
+        checked: document.documentElement.dataset.theme === 'dark',
+        onClick: () =>
+          updateData((d) => ({
+            ...d,
+            settings: { ...d.settings, appearance: document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' }
+          }))
+      },
       { sep: true },
       { label: 'Session précédente', shortcut: '⌘⇧[', onClick: () => cycle(-1) },
       { label: 'Session suivante', shortcut: '⌘⇧]', onClick: () => cycle(1) },
-      { label: 'Prochaine session en attente', shortcut: '⌘⇧A', icon: <Icon name="bell" />, onClick: nextAttention }
+      { label: 'Prochaine session en attente', shortcut: '⌘⇧A', icon: <Icon name="bell" />, onClick: nextAttention },
+      { sep: true },
+      { heading: 'Disposition' },
+      ...([1, 2, 3, 4] as const).map<MenuItem>((n) => ({
+        label: ['Une session', 'Deux sessions côte à côte', 'Trois sessions', 'Quatre sessions'][n - 1],
+        shortcut: `⌥⌘${n}`,
+        icon: <Icon name={`layout${n}`} />,
+        checked: ui.view === 'project' && (split ?? 1) === n,
+        onClick: () => runMenu(`split-${n}`)
+      }))
     ],
     Outils: [{ label: 'Paramètres…', shortcut: '⌘,', icon: <Icon name="gear" />, onClick: () => runMenu('settings') }],
     '?': [{ label: 'Aide et raccourcis', icon: <Icon name="help" />, onClick: () => setUI({ dialog: { kind: 'shortcuts' } }) }]

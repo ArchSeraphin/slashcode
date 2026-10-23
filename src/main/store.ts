@@ -14,13 +14,15 @@ const DEFAULT_SETTINGS: Settings = {
   notifyOnFinish: true,
   fontSize: 13,
   consoleTheme: 'xp',
+  appearance: 'light',
   phoneEnabled: false,
   phoneProvider: 'bark',
   barkServer: 'https://api.day.app',
   barkKey: '',
   phoneServer: 'https://ntfy.sh',
   phoneTopic: '',
-  phoneWhen: 'away'
+  phoneWhen: 'away',
+  dictationLang: 'fr-FR'
 }
 
 // The topic name is the only secret on a public ntfy server, so make it unguessable.

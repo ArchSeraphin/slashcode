@@ -38,7 +38,10 @@ export interface Project {
   permission: PermissionMode
   createdAt: number
   lastOpenedAt: number
+  split?: SplitCount // sessions shown side by side (1 when missing)
 }
+
+export type SplitCount = 1 | 2 | 3 | 4
 
 export interface Note {
   id: string
@@ -57,6 +60,8 @@ export interface Task {
   doneAt: number | null
 }
 
+export type Appearance = 'light' | 'dark' | 'system'
+
 export interface Settings {
   defaultModel: ModelId
   defaultPermission: PermissionMode
@@ -67,6 +72,7 @@ export interface Settings {
   notifyOnFinish: boolean
   fontSize: number
   consoleTheme: 'xp' | 'luna'
+  appearance: Appearance
   phoneEnabled: boolean
   phoneProvider: 'bark' | 'ntfy'
   barkServer: string
@@ -74,6 +80,7 @@ export interface Settings {
   phoneServer: string
   phoneTopic: string
   phoneWhen: 'away' | 'always'
+  dictationLang: string
 }
 
 export interface NotifyTestResult {
@@ -167,5 +174,22 @@ export interface LaunchOptions {
   prompt?: string
   title?: string
 }
+
+export const DICTATION_LANGS: { id: string; label: string }[] = [
+  { id: 'fr-FR', label: 'Français' },
+  { id: 'en-US', label: 'Anglais (États-Unis)' },
+  { id: 'en-GB', label: 'Anglais (Royaume-Uni)' },
+  { id: 'es-ES', label: 'Espagnol' },
+  { id: 'de-DE', label: 'Allemand' },
+  { id: 'it-IT', label: 'Italien' }
+]
+
+export type DictationEvent =
+  | { type: 'installing' }
+  | { type: 'ready'; engine?: string }
+  | { type: 'level'; value: number }
+  | { type: 'partial'; text: string }
+  | { type: 'final'; text: string }
+  | { type: 'error'; code: string; message: string }
 
 export const ATTENTION_STATUSES: LiveStatus[] = ['permission', 'done']

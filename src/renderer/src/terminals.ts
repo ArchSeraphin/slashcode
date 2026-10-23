@@ -3,7 +3,7 @@ import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Unicode11Addon } from '@xterm/addon-unicode11'
 import '@xterm/xterm/css/xterm.css'
-import { api, getState, pendingLaunches, setLive } from './store'
+import { api, getState, pendingLaunches, setLive, setRefocus } from './store'
 
 interface Entry {
   term: Terminal
@@ -67,6 +67,7 @@ export const THEMES: Record<'xp' | 'luna', ITheme> = {
 }
 
 api.onData((id, data) => entries.get(id)?.term.write(data))
+setRefocus((id) => requestAnimationFrame(() => focusTerminal(id)))
 
 function settings() {
   return getState().data!.settings

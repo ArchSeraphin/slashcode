@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
-import type { AppData, DiscoveredFolder, HistoryEntry, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
+import type { AppData, DictationEvent, DiscoveredFolder, HistoryEntry, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
 
 function on<T extends unknown[]>(channel: string, cb: (...args: T) => void): () => void {
   const listener = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...(args as T))
@@ -21,6 +21,11 @@ const api = {
   kill: (id: string) => ipcRenderer.send('session:kill', id),
   ack: (id: string) => ipcRenderer.send('session:ack', id),
   setVisible: (id: string | null) => ipcRenderer.send('ui:visible', id),
+
+  dictationStart: (lang: string) => ipcRenderer.send('dictation:start', lang),
+  dictationStop: () => ipcRenderer.send('dictation:stop'),
+  dictationCancel: () => ipcRenderer.send('dictation:cancel'),
+  onDictation: (cb: (e: DictationEvent) => void) => on('dictation:event', cb),
 
   history: (path: string): Promise<HistoryEntry[]> => ipcRenderer.invoke('history:list', path),
   discover: (): Promise<DiscoveredFolder[]> => ipcRenderer.invoke('history:discover'),
