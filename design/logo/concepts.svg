@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="840" viewBox="0 0 1600 840"><defs><filter id="grey"><feColorMatrix type="saturate" values="0"/></filter></defs><rect width="1600" height="840" fill="#f7f7f4"/><text x="60" y="78" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="40" font-weight="700" fill="#161616">Logo concepts</text><text x="60" y="116" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="20" fill="#6b6b6b">Concepts for review: pick a direction (or tell me what you like in each).</text><rect x="60" y="150" width="474.667" height="630" rx="18" fill="#fff" stroke="#161616" stroke-width="2"/><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="90" y="190" width="414.667" height="300" preserveAspectRatio="xMidYMid meet"><title>SlashCode A</title>
+  <path fill-rule="evenodd" d="M38 46h52c5 0 9 2 12 6l12 14h104c8 0 14 6 14 14v118c0 8-6 14-14 14H38c-8 0-14-6-14-14V60c0-8 6-14 14-14z
+    M148 92h38l-50 112H98z"/>
+</svg>
+</g><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="90" y="516" width="64" height="64" preserveAspectRatio="xMidYMid meet"><title>SlashCode A</title>
+  <path fill-rule="evenodd" d="M38 46h52c5 0 9 2 12 6l12 14h104c8 0 14 6 14 14v118c0 8-6 14-14 14H38c-8 0-14-6-14-14V60c0-8 6-14 14-14z
+    M148 92h38l-50 112H98z"/>
+</svg>
+</g><text x="122" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">64px</text><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="180" y="548" width="32" height="32" preserveAspectRatio="xMidYMid meet"><title>SlashCode A</title>
+  <path fill-rule="evenodd" d="M38 46h52c5 0 9 2 12 6l12 14h104c8 0 14 6 14 14v118c0 8-6 14-14 14H38c-8 0-14-6-14-14V60c0-8 6-14 14-14z
+    M148 92h38l-50 112H98z"/>
+</svg>
+</g><text x="196" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">32px</text><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="238" y="564" width="16" height="16" preserveAspectRatio="xMidYMid meet"><title>SlashCode A</title>
+  <path fill-rule="evenodd" d="M38 46h52c5 0 9 2 12 6l12 14h104c8 0 14 6 14 14v118c0 8-6 14-14 14H38c-8 0-14-6-14-14V60c0-8 6-14 14-14z
+    M148 92h38l-50 112H98z"/>
+</svg>
+</g><text x="246" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">16px</text><text x="90.0" y="636" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700" fill="#161616">A · Dossier-slash</text><text x="90.0" y="664" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#161616" letter-spacing="1.5">RECOMMENDED</text><text x="90.0" y="698" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" fill="#555">Le dossier de travail, la commande taillée</text><text x="90.0" y="724" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" fill="#555">dedans</text><rect x="562.667" y="150" width="474.667" height="630" rx="18" fill="#fff" stroke="#e4e4e0" stroke-width="1"/><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="592.667" y="190" width="414.667" height="300" preserveAspectRatio="xMidYMid meet"><title>SlashCode B</title>
+  <path d="M84 28h136c8 0 14 6 14 14v112c0 8-6 14-14 14h-20V96c0-12-10-22-22-22H70V42c0-8 6-14 14-14z"/>
+  <path fill-rule="evenodd" d="M36 86h136c8 0 14 6 14 14v114c0 8-6 14-14 14H36c-8 0-14-6-14-14V100c0-8 6-14 14-14z
+    M36 124v86c0 2 2 4 4 4h128c2 0 4-2 4-4v-86z"/>
+  <path d="M116 132h32l-38 76H78z"/>
+</svg>
+</g><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="592.667" y="516" width="64" height="64" preserveAspectRatio="xMidYMid meet"><title>SlashCode B</title>
+  <path d="M84 28h136c8 0 14 6 14 14v112c0 8-6 14-14 14h-20V96c0-12-10-22-22-22H70V42c0-8 6-14 14-14z"/>
+  <path fill-rule="evenodd" d="M36 86h136c8 0 14 6 14 14v114c0 8-6 14-14 14H36c-8 0-14-6-14-14V100c0-8 6-14 14-14z
+    M36 124v86c0 2 2 4 4 4h128c2 0 4-2 4-4v-86z"/>
+  <path d="M116 132h32l-38 76H78z"/>
+</svg>
+</g><text x="624.667" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">64px</text><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="682.667" y="548" width="32" height="32" preserveAspectRatio="xMidYMid meet"><title>SlashCode B</title>
+  <path d="M84 28h136c8 0 14 6 14 14v112c0 8-6 14-14 14h-20V96c0-12-10-22-22-22H70V42c0-8 6-14 14-14z"/>
+  <path fill-rule="evenodd" d="M36 86h136c8 0 14 6 14 14v114c0 8-6 14-14 14H36c-8 0-14-6-14-14V100c0-8 6-14 14-14z
+    M36 124v86c0 2 2 4 4 4h128c2 0 4-2 4-4v-86z"/>
+  <path d="M116 132h32l-38 76H78z"/>
+</svg>
+</g><text x="698.667" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">32px</text><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="740.667" y="564" width="16" height="16" preserveAspectRatio="xMidYMid meet"><title>SlashCode B</title>
+  <path d="M84 28h136c8 0 14 6 14 14v112c0 8-6 14-14 14h-20V96c0-12-10-22-22-22H70V42c0-8 6-14 14-14z"/>
+  <path fill-rule="evenodd" d="M36 86h136c8 0 14 6 14 14v114c0 8-6 14-14 14H36c-8 0-14-6-14-14V100c0-8 6-14 14-14z
+    M36 124v86c0 2 2 4 4 4h128c2 0 4-2 4-4v-86z"/>
+  <path d="M116 132h32l-38 76H78z"/>
+</svg>
+</g><text x="748.667" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">16px</text><text x="592.6666666666667" y="636" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700" fill="#161616">B · Fenêtres</text><text x="592.6666666666667" y="670" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" fill="#555">Plusieurs sessions empilées, la commande au</text><text x="592.6666666666667" y="696" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" fill="#555">premier plan</text><rect x="1065.33" y="150" width="474.667" height="630" rx="18" fill="#fff" stroke="#e4e4e0" stroke-width="1"/><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="1095.33" y="190" width="414.667" height="300" preserveAspectRatio="xMidYMid meet"><title>SlashCode C</title>
+  <path fill-rule="evenodd" d="M72 24h112c26.5 0 48 21.5 48 48v112c0 26.5-21.5 48-48 48H72c-26.5 0-48-21.5-48-48V72c0-26.5 21.5-48 48-48z
+    M24 76h208v12H24z
+    M134 106h34l-48 100H86z
+    M172 188a16 16 0 1 0 0.01 0z"/>
+</svg>
+</g><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="1095.33" y="516" width="64" height="64" preserveAspectRatio="xMidYMid meet"><title>SlashCode C</title>
+  <path fill-rule="evenodd" d="M72 24h112c26.5 0 48 21.5 48 48v112c0 26.5-21.5 48-48 48H72c-26.5 0-48-21.5-48-48V72c0-26.5 21.5-48 48-48z
+    M24 76h208v12H24z
+    M134 106h34l-48 100H86z
+    M172 188a16 16 0 1 0 0.01 0z"/>
+</svg>
+</g><text x="1127.33" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">64px</text><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="1185.33" y="548" width="32" height="32" preserveAspectRatio="xMidYMid meet"><title>SlashCode C</title>
+  <path fill-rule="evenodd" d="M72 24h112c26.5 0 48 21.5 48 48v112c0 26.5-21.5 48-48 48H72c-26.5 0-48-21.5-48-48V72c0-26.5 21.5-48 48-48z
+    M24 76h208v12H24z
+    M134 106h34l-48 100H86z
+    M172 188a16 16 0 1 0 0.01 0z"/>
+</svg>
+</g><text x="1201.33" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">32px</text><g filter="url(#grey)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" x="1243.33" y="564" width="16" height="16" preserveAspectRatio="xMidYMid meet"><title>SlashCode C</title>
+  <path fill-rule="evenodd" d="M72 24h112c26.5 0 48 21.5 48 48v112c0 26.5-21.5 48-48 48H72c-26.5 0-48-21.5-48-48V72c0-26.5 21.5-48 48-48z
+    M24 76h208v12H24z
+    M134 106h34l-48 100H86z
+    M172 188a16 16 0 1 0 0.01 0z"/>
+</svg>
+</g><text x="1251.33" y="600" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#8a8a8a" text-anchor="middle">16px</text><text x="1095.3333333333335" y="636" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="700" fill="#161616">C · Tuile Luna</text><text x="1095.3333333333335" y="670" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" fill="#555">L&#x27;icône actuelle épurée : barre de titre,</text><text x="1095.3333333333335" y="696" font-family="system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" fill="#555">slash et curseur</text></svg>

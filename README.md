@@ -1,0 +1,80 @@
+<p align="center"><img src="design/logo/final/app-icon-512.png" width="128" alt="Icône SlashCode"></p>
+
+# SlashCode
+
+Organisateur de sessions [Claude Code](https://claude.com/claude-code) pour Mac Apple Silicon, habillé de la tête aux pieds en Windows XP (Luna).
+
+Quand on jongle avec cinq ou six projets et plusieurs sessions Claude dans chacun, les fenêtres de terminal se perdent. SlashCode range tout par **dossier de travail** : chaque projet garde ses sessions (de vrais terminaux), ses tâches, ses notes et l'historique de ses conversations Claude, et l'app prévient quand une session a besoin de toi.
+
+![Poste de travail](docs/captures/accueil.png)
+
+## Ce qu'il fait
+
+- **Projets rangés par groupes** repliables (Clients, Produits, Perso…), favoris, couleurs, archives. Glisser un projet d'un groupe à l'autre le déplace ; glisser un dossier du Finder sur un groupe crée un projet.
+- **Import en un clic** : au premier lancement, SlashCode liste tous les dossiers où Claude Code a déjà servi (`~/.claude/projects`).
+- **Sessions = vrais terminaux** (xterm.js + node-pty) qui lancent `claude` : toutes les fonctions du CLI restent disponibles. Les onglets survivent au changement de projet, et après un redémarrage « Tout reprendre » relance chaque conversation (`claude --resume`).
+- **Choix du modèle en un clic** (Fable, Opus, Sonnet, Haiku), modèle et mode d'autorisation par défaut propres à chaque projet.
+- **Tâches** par projet : le bouton ▶ lance une tâche comme premier message d'une nouvelle session, ➤ l'écrit dans la session active.
+- **Notes** par projet, enregistrées automatiquement, envoyables à la session active.
+- **Historique** des conversations Claude du dossier, reprise en un clic.
+- **Notifications** quand Claude demande une autorisation ou a fini son tour : notification macOS, bulle XP, bouton de la barre des tâches qui clignote, badge du Dock, et en option sur iPhone.
+- **Peu de clics** : double-clic sur un projet pour lancer Claude, `⌘K` pour aller n'importe où, `⌘⇧A` pour sauter à la prochaine session qui attend.
+
+![Vue projet](docs/captures/projet.png)
+
+## Installation
+
+Prérequis : macOS sur Apple Silicon, Node.js 22 ou plus, et le CLI [Claude Code](https://docs.claude.com/en/docs/claude-code) installé (`claude` dans le PATH).
+
+```sh
+git clone https://github.com/ArchSeraphin/slashcode.git
+cd slashcode
+npm install
+npm run dist                                                # construit dist/mac-arm64/SlashCode.app
+codesign --force --deep -s - dist/mac-arm64/SlashCode.app   # signature locale
+cp -R dist/mac-arm64/SlashCode.app /Applications/
+```
+
+Avec npm 11, les scripts d'installation sont bloqués par défaut : `package.json` autorise déjà ceux d'`electron` et de `node-pty`. node-pty utilise ses binaires précompilés (N-API), aucune compilation native n'est nécessaire.
+
+Pour développer : `npm run dev` (rechargement à chaud) et `npm run typecheck`.
+
+## Raccourcis
+
+| Raccourci | Action |
+|---|---|
+| `⌘K` | Exécuter… : aller à un projet ou une session (`⌘↩` ouvre et lance une session) |
+| `⌘T` | Nouvelle session dans le projet ouvert |
+| `⌘W` | Fermer la session active |
+| `⌘⇧A` | Prochaine session qui attend |
+| `⌘⇧[` / `⌘⇧]` | Session précédente / suivante |
+| `⌘1` … `⌘9` | N-ième onglet du projet |
+| `⌘J` | Afficher ou masquer Tâches & notes |
+| `⇧↩` | Nouvelle ligne dans le prompt Claude |
+
+## Comment marchent les notifications
+
+À chaque session, SlashCode passe à `claude` des hooks via `--settings` (`SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Notification`, `Stop`). Chaque hook envoie un petit `curl` vers un serveur local de l'app, protégé par un jeton aléatoire. Ta configuration Claude n'est jamais modifiée.
+
+Le contenu dit ce qui se passe : pour une autorisation, l'outil et la commande ou le fichier visé ; pour une fin de tour, le début de la réponse de Claude, le modèle et la durée.
+
+Fermer la fenêtre avec des sessions en cours propose de les garder en arrière-plan : les notifications continuent d'arriver.
+
+### Sur l'iPhone
+
+Deux services au choix dans Paramètres > Sur l'iPhone :
+
+- **[Bark](https://apps.apple.com/app/id1403753865)** (recommandé) : icône SlashCode sur chaque notification, regroupement par projet, demandes d'autorisation « urgentes » qui passent le mode Concentration. Le serveur officiel `https://api.day.app` fonctionne directement ; pour plus de confidentialité, héberge le tien avec [`deploy/bark/docker-compose.yml`](deploy/bark/docker-compose.yml) derrière un proxy HTTPS. Colle ensuite l'adresse donnée par l'app Bark dans « Clé de l'appareil ».
+- **[ntfy](https://ntfy.sh)** : sans compte, mais pas d'icône personnalisée sur iPhone.
+
+Par défaut, l'iPhone n'est prévenu que si tu n'es pas devant le Mac (écran verrouillé ou aucune activité depuis 2 minutes).
+
+## Pile technique
+
+Electron, React, xterm.js, node-pty, electron-vite. Thème Luna écrit à la main (aucun élément graphique Microsoft) ; icônes dessinées en SVG. Les données sont dans `~/Library/Application Support/SlashCode/slashcode-data.json`. `SLASHCODE_USERDATA=/un/dossier` lance l'app sur un autre jeu de données (tests).
+
+## Logo
+
+Piste « Dossier-slash » : le dossier jaune de l'époque, la commande `/` taillée dedans. Sources dans [`design/logo/final/`](design/logo/final) : icône d'app, coupe petite taille (16–32 px), versions noire, blanche et monochrome, icônes de notification.
+
+SlashCode n'est affilié ni à Anthropic ni à Microsoft. Windows XP est une marque de Microsoft.

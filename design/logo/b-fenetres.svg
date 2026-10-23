@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><title>SlashCode B</title>
+  <path d="M84 28h136c8 0 14 6 14 14v112c0 8-6 14-14 14h-20V96c0-12-10-22-22-22H70V42c0-8 6-14 14-14z"/>
+  <path fill-rule="evenodd" d="M36 86h136c8 0 14 6 14 14v114c0 8-6 14-14 14H36c-8 0-14-6-14-14V100c0-8 6-14 14-14z
+    M36 124v86c0 2 2 4 4 4h128c2 0 4-2 4-4v-86z"/>
+  <path d="M116 132h32l-38 76H78z"/>
+</svg>

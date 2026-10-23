@@ -1,0 +1,13 @@
+# Self-hosted Bark server for SlashCode iPhone notifications.
+# Put it behind your reverse proxy (Coolify, Traefik, Caddy…) with HTTPS,
+# then use its URL in the Bark app and in SlashCode > Paramètres > Sur l'iPhone.
+services:
+  bark:
+    image: finab/bark-server:v2.3.8
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - bark-data:/data
+volumes:
+  bark-data:

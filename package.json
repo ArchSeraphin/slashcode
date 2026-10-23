@@ -1,0 +1,76 @@
+{
+  "name": "slashcode",
+  "productName": "SlashCode",
+  "version": "0.1.0",
+  "description": "Organisateur de sessions Claude Code, façon Windows XP",
+  "main": "out/main/index.js",
+  "author": "VoilaVoila",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "postinstall": "chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper",
+    "dist": "electron-vite build && electron-builder --mac --arm64 --dir"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^6.0.0",
+    "playwright-core": "^1.64.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/addon-unicode11": "^0.9.0",
+    "@xterm/addon-web-links": "^0.12.0",
+    "@xterm/addon-webgl": "^0.19.0",
+    "@xterm/xterm": "^6.0.0",
+    "node-pty": "^1.1.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "allowScripts": {
+    "electron@45.0.0": true,
+    "node-pty@1.1.0": true,
+    "electron-winstaller": false
+  },
+  "build": {
+    "appId": "tv.voilavoila.slashcode",
+    "productName": "SlashCode",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/node-pty/**"
+    ],
+    "npmRebuild": false,
+    "mac": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.png",
+      "identity": null,
+      "extendInfo": {
+        "NSUserNotificationAlertStyle": "alert"
+      }
+    }
+  }
+}
