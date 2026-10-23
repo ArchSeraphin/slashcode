@@ -1,9 +1,10 @@
 import { createServer, type Server } from 'http'
 import { randomBytes } from 'crypto'
-import { existsSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { homedir } from 'os'
+import { join } from 'path'
 import * as pty from 'node-pty'
-import type { Effort, LiveSession, LiveStatus, ModelId, PermissionMode } from '@shared/types'
+import type { Effort, LiveSession, LiveStatus, ModelId, PermissionMode, Usage, UsageWindow } from '@shared/types'
 
 const HOOK_EVENTS = ['SessionStart', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'Notification', 'Stop', 'SessionEnd'] as const
 type HookEvent = (typeof HOOK_EVENTS)[number]
@@ -55,10 +56,38 @@ export interface SessionEvents {
   onData(id: string, data: string): void
   onUpdate(info: LiveSession): void
   onHook(info: LiveSession, event: HookEvent, payload: Record<string, unknown>): void
+  onUsage(usage: Usage): void
 }
 
 function shq(s: string): string {
   return "'" + s.replace(/'/g, `'\\''`) + "'"
+}
+
+/** The user's own status line, so SlashCode can relay its input without replacing it. */
+function userStatusLine(): Record<string, unknown> | null {
+  try {
+    const dir = process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude')
+    const s = JSON.parse(readFileSync(join(dir, 'settings.json'), 'utf8'))?.statusLine
+    return s && s.type === 'command' && typeof s.command === 'string' ? s : null
+  } catch {
+    return null
+  }
+}
+
+function num(v: unknown): number | null {
+  return typeof v === 'number' && Number.isFinite(v) ? v : null
+}
+
+/** Claude reports resets_at as epoch seconds or as an ISO date depending on the source. */
+function usageWindow(v: unknown): UsageWindow | null {
+  const w = (v && typeof v === 'object' ? v : null) as Record<string, unknown> | null
+  const percent = num(w?.used_percentage)
+  if (percent === null) return null
+  const r = w!.resets_at
+  let resetsAt: number | null = null
+  if (typeof r === 'number') resetsAt = r < 1e12 ? r * 1000 : r
+  else if (typeof r === 'string' && !Number.isNaN(Date.parse(r))) resetsAt = Date.parse(r)
+  return { percent, resetsAt }
 }
 
 export class SessionManager {
@@ -66,6 +95,7 @@ export class SessionManager {
   private server: Server | null = null
   private port = 0
   private token = randomBytes(16).toString('hex')
+  private usage: Usage | null = null
 
   constructor(private events: SessionEvents) {}
 
@@ -73,7 +103,8 @@ export class SessionManager {
     this.server = createServer((req, res) => {
       const url = new URL(req.url ?? '/', 'http://127.0.0.1')
       const match = url.pathname.match(/^\/hook\/([A-Za-z]+)$/)
-      if (req.method !== 'POST' || !match || url.searchParams.get('t') !== this.token) {
+      const status = url.pathname === '/status'
+      if (req.method !== 'POST' || (!match && !status) || url.searchParams.get('t') !== this.token) {
         res.writeHead(404).end()
         return
       }
@@ -90,7 +121,9 @@ export class SessionManager {
         } catch {
           // Claude always sends JSON, ignore anything else
         }
-        this.handleHook(url.searchParams.get('sid') ?? '', match[1] as HookEvent, payload)
+        const sid = url.searchParams.get('sid') ?? ''
+        if (status) this.handleStatus(sid, payload)
+        else this.handleHook(sid, match![1] as HookEvent, payload)
       })
     })
     await new Promise<void>((resolve) => this.server!.listen(0, '127.0.0.1', resolve))
@@ -119,7 +152,41 @@ export class SessionManager {
       const matcher = ev === 'PreToolUse' || ev === 'PostToolUse' ? { matcher: '*' } : {}
       hooks[ev] = [{ ...matcher, hooks: [{ type: 'command', command, timeout: 5 }] }]
     }
-    return JSON.stringify({ hooks })
+    // Claude feeds the status line a JSON with the plan limits and the context fill: send a copy
+    // to SlashCode in the background, then hand it to the user's own status line, if any.
+    const relay =
+      `input=$(cat); [ -n "$SLASHCODE_PORT" ] && printf '%s' "$input" | curl -s -m 2 -o /dev/null -X POST ` +
+      `-H 'Content-Type: application/json' --data-binary @- ` +
+      `"http://127.0.0.1:$SLASHCODE_PORT/status?sid=$SLASHCODE_SID&t=$SLASHCODE_TOKEN" >/dev/null 2>&1 &`
+    const own = userStatusLine()
+    const command = own ? `${relay} printf '%s' "$input" | /bin/sh -c ${shq(own.command as string)}` : `${relay} exit 0`
+    return JSON.stringify({ hooks, statusLine: { ...own, type: 'command', command } })
+  }
+
+  private handleStatus(sid: string, payload: Record<string, unknown>): void {
+    const live = this.sessions.get(sid)
+    if (live) {
+      const ctx = payload.context_window as Record<string, unknown> | undefined
+      const cost = payload.cost as Record<string, unknown> | undefined
+      const contextPercent = num(ctx?.used_percentage)
+      const costUsd = num(cost?.total_cost_usd)
+      if (contextPercent !== live.info.contextPercent || costUsd !== live.info.costUsd) {
+        live.info.contextPercent = contextPercent
+        live.info.costUsd = costUsd
+        this.events.onUpdate({ ...live.info })
+      }
+    }
+    const limits = payload.rate_limits as Record<string, unknown> | undefined
+    const fiveHour = usageWindow(limits?.five_hour)
+    const sevenDay = usageWindow(limits?.seven_day)
+    if (!fiveHour && !sevenDay) return
+    const same = (a: UsageWindow | null | undefined, b: UsageWindow | null) =>
+      a?.percent === b?.percent && a?.resetsAt === b?.resetsAt
+    const unchanged = same(this.usage?.fiveHour, fiveHour) && same(this.usage?.sevenDay, sevenDay)
+    // The status line refreshes often: only pass on changes, plus a heartbeat for "updated at".
+    if (unchanged && Date.now() - this.usage!.updatedAt < 60_000) return
+    this.usage = { fiveHour, sevenDay, updatedAt: Date.now() }
+    this.events.onUsage(this.usage)
   }
 
   private handleHook(sid: string, event: HookEvent, payload: Record<string, unknown>): void {
@@ -227,7 +294,9 @@ export class SessionManager {
       startedAt: Date.now(),
       model: req.model,
       detail: '',
-      turnMs: null
+      turnMs: null,
+      contextPercent: null,
+      costUsd: null
     }
     const live: Live = { info, proc, buffer: '', lastDataAt: Date.now(), lastTool: '', turnStartedAt: 0 }
     this.sessions.set(req.id, live)

@@ -127,6 +127,14 @@ function TerminalPane({ record, visible }: { record: SessionRecord; visible: boo
           {live ? statusLabel(live) : 'Interrompue'}
         </span>
         <span className="sfield">Modèle : {model}</span>
+        {live?.contextPercent != null && (
+          <span
+            className="sfield"
+            title={live.costUsd != null ? `Coût estimé de la session : ${live.costUsd.toFixed(2).replace('.', ',')} $` : undefined}
+          >
+            Contexte : {Math.round(live.contextPercent)} %
+          </span>
+        )}
         <span className="sfield grow">{record.title}</span>
         <span className="sfield">⇧↩ nouvelle ligne</span>
       </div>

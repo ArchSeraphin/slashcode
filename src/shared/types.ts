@@ -125,6 +125,20 @@ export interface LiveSession {
   model: ModelId
   detail: string // permission: the pending tool call; done: start of Claude's last reply
   turnMs: number | null
+  contextPercent: number | null // from Claude's status line
+  costUsd: number | null
+}
+
+export interface UsageWindow {
+  percent: number
+  resetsAt: number | null // ms
+}
+
+/** Plan limits as last reported by any session's status line (they are shared by the whole account). */
+export interface Usage {
+  fiveHour: UsageWindow | null
+  sevenDay: UsageWindow | null
+  updatedAt: number
 }
 
 export interface HistoryEntry {

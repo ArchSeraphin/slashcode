@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
-import type { AppData, DiscoveredFolder, HistoryEntry, LaunchOptions, LiveSession, NotifyTestResult } from '@shared/types'
+import type { AppData, DiscoveredFolder, HistoryEntry, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
 
 function on<T extends unknown[]>(channel: string, cb: (...args: T) => void): () => void {
   const listener = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...(args as T))
@@ -17,6 +17,7 @@ const api = {
   resize: (id: string, cols: number, rows: number) => ipcRenderer.send('session:resize', id, cols, rows),
   buffer: (id: string): Promise<string> => ipcRenderer.invoke('session:buffer', id),
   listLive: (): Promise<LiveSession[]> => ipcRenderer.invoke('session:list'),
+  usage: (): Promise<Usage | null> => ipcRenderer.invoke('usage:get'),
   kill: (id: string) => ipcRenderer.send('session:kill', id),
   ack: (id: string) => ipcRenderer.send('session:ack', id),
   setVisible: (id: string | null) => ipcRenderer.send('ui:visible', id),
@@ -41,6 +42,7 @@ const api = {
   onData: (cb: (id: string, data: string) => void) => on('session:data', cb),
   onUpdate: (cb: (info: LiveSession) => void) => on('session:update', cb),
   onTitle: (cb: (id: string, title: string) => void) => on('session:title', cb),
+  onUsage: (cb: (usage: Usage) => void) => on('usage:update', cb),
   onBalloon: (cb: (info: LiveSession) => void) => on('ui:balloon', cb),
   onGoto: (cb: (id: string) => void) => on('ui:goto', cb),
   onMenu: (cb: (action: string) => void) => on('menu', cb),

@@ -8,7 +8,8 @@ import type {
   Note,
   Project,
   SessionRecord,
-  Task
+  Task,
+  Usage
 } from '@shared/types'
 
 declare global {
@@ -61,12 +62,14 @@ export interface UIState {
 export interface State {
   data: AppData | null
   live: Record<string, LiveSession>
+  usage: Usage | null
   ui: UIState
 }
 
 let state: State = {
   data: null,
   live: {},
+  usage: null,
   ui: {
     view: 'home',
     projectId: null,
@@ -121,6 +124,11 @@ export function setLive(info: LiveSession): void {
   emit()
 }
 
+export function setUsage(usage: Usage): void {
+  state = { ...state, usage }
+  emit()
+}
+
 export function dropLive(id: string): void {
   if (!state.live[id]) return
   const live = { ...state.live }
@@ -130,10 +138,10 @@ export function dropLive(id: string): void {
 }
 
 export async function init(): Promise<void> {
-  const [data, live, win] = await Promise.all([api.loadData(), api.listLive(), api.winState()])
+  const [data, live, win, usage] = await Promise.all([api.loadData(), api.listLive(), api.winState(), api.usage()])
   const liveMap: Record<string, LiveSession> = {}
   for (const l of live) liveMap[l.id] = l
-  state = { ...state, data, live: liveMap, ui: { ...state.ui, maximized: win.maximized, focused: win.focused } }
+  state = { ...state, data, live: liveMap, usage, ui: { ...state.ui, maximized: win.maximized, focused: win.focused } }
   emit()
   if (!data.projects.length) setUI({ dialog: { kind: 'import', firstRun: true } })
 }

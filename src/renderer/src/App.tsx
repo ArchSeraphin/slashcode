@@ -9,6 +9,7 @@ import {
   newSession,
   openSessionsOf,
   setLive,
+  setUsage,
   setUI,
   updateData,
   useStore
@@ -94,6 +95,7 @@ export function App() {
           }))
         }
       }),
+      api.onUsage(setUsage),
       api.onTitle((id, title) => {
         // Claude's own title only replaces the generic "Session n" names.
         const rec = getState().data?.sessions.find((s) => s.id === id)

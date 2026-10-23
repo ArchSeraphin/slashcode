@@ -9,6 +9,7 @@ import {
   shortPath,
   useStore
 } from '../store'
+import type { UsageWindow } from '@shared/types'
 import { Icon } from './Icon'
 import { StatusIcon, statusLabel } from './StatusIcon'
 
@@ -61,6 +62,7 @@ export function Taskbar() {
           })}
         </div>
         <div className="tray">
+          <UsageMeters now={now} />
           <button onClick={() => setUI({ dialog: { kind: 'settings' } })} title="Notifications et paramètres">
             <Icon name="bell" size={16} />
             {attention > 0 && <b>{attention}</b>}
@@ -72,6 +74,43 @@ export function Taskbar() {
           <span className="clock">{now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
       </footer>
+    </>
+  )
+}
+
+function resetLabel(at: number, now: Date): string {
+  const d = new Date(at)
+  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  if (d.toDateString() === now.toDateString()) return `à ${time}`
+  return `${d.toLocaleDateString('fr-FR', { weekday: 'long' })} à ${time}`
+}
+
+function UsageMeter({ label, name, w, now }: { label: string; name: string; w: UsageWindow | null; now: Date }) {
+  if (!w) return null
+  // Past its reset time, the last known value no longer holds.
+  const reset = w.resetsAt !== null && w.resetsAt <= now.getTime()
+  const pct = reset ? 0 : Math.max(0, Math.min(100, Math.round(w.percent)))
+  const level = pct >= 90 ? ' high' : pct >= 70 ? ' mid' : ''
+  const when = reset ? 'remise à zéro depuis la dernière mesure' : w.resetsAt ? `remise à zéro ${resetLabel(w.resetsAt, now)}` : ''
+  return (
+    <span className="usage" title={`${name} : ${pct} % utilisés${when ? `\n${when}` : ''}`}>
+      {label}
+      <span className={'usage-bar' + level}>
+        <i style={{ width: `${pct}%` }} />
+      </span>
+      {pct}%
+    </span>
+  )
+}
+
+/** Plan limits relayed by the sessions' status line. */
+function UsageMeters({ now }: { now: Date }) {
+  const usage = useStore((s) => s.usage)
+  if (!usage) return null
+  return (
+    <>
+      <UsageMeter label="5 h" name="Limite sur 5 heures" w={usage.fiveHour} now={now} />
+      <UsageMeter label="7 j" name="Limite hebdomadaire" w={usage.sevenDay} now={now} />
     </>
   )
 }

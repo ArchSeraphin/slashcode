@@ -1,13 +1,13 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, Notification, powerMonitor, shell } from 'electron'
 import { execFile } from 'child_process'
-import { closeSync, existsSync, openSync, readSync, statSync } from 'fs'
+import { closeSync, existsSync, openSync, readFileSync, readSync, statSync, writeFileSync } from 'fs'
 import { homedir } from 'os'
 import { join } from 'path'
 import { Store } from './store'
 import { SessionManager } from './sessions'
 import { discoverFolders, encodeProjectDir, lastReply, listHistory } from './history'
 import { pushPhone } from './push'
-import type { AppData, LaunchOptions, LiveSession, NotifyTestResult } from '@shared/types'
+import type { AppData, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
 
 app.setName('SlashCode')
 // Lets tests run against a throwaway data folder.
@@ -29,8 +29,29 @@ const sessions = new SessionManager({
   },
   onHook(info, event, payload) {
     if (info.status === 'permission' || (info.status === 'done' && event === 'Stop')) notify(info, payload)
+  },
+  onUsage(next) {
+    usage = next
+    try {
+      writeFileSync(usageFile(), JSON.stringify(next))
+    } catch {
+      // only a cache for the next launch
+    }
+    win?.webContents.send('usage:update', next)
   }
 })
+
+// Plan limits only arrive while a session runs, so keep the last ones for the next launch.
+let usage: Usage | null = null
+const usageFile = () => join(app.getPath('userData'), 'usage.json')
+
+function loadUsage(): void {
+  try {
+    usage = JSON.parse(readFileSync(usageFile(), 'utf8'))
+  } catch {
+    usage = null
+  }
+}
 
 function projectOf(info: LiveSession) {
   return store.data.projects.find((p) => p.id === info.projectId)
@@ -297,6 +318,7 @@ function registerIpc(): void {
   ipcMain.on('session:resize', (_e, id: string, cols: number, rows: number) => sessions.resize(id, cols, rows))
   ipcMain.handle('session:buffer', (_e, id: string) => sessions.buffer(id))
   ipcMain.handle('session:list', () => sessions.list())
+  ipcMain.handle('usage:get', () => usage)
   ipcMain.on('session:kill', (_e, id: string) => {
     sessions.kill(id)
     refreshBadge()
@@ -351,6 +373,7 @@ function registerIpc(): void {
 
 app.whenReady().then(async () => {
   store = new Store()
+  loadUsage()
   await sessions.start()
   registerIpc()
   buildMenu()
