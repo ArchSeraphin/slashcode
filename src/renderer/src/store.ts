@@ -370,6 +370,32 @@ export function addTask(projectId: string, text: string): void {
   updateData((d) => ({ ...d, tasks: [...d.tasks, t] }))
 }
 
+/**
+ * One task per non-empty line of pasted text. List markers ("- ", "* ", "• ",
+ * "1. ", "[ ] ") are stripped, and lines already ticked ("[x] …", as in a
+ * SlashTabs CSV checklist cell) are skipped: there is nothing left to do on them.
+ */
+export function splitPastedTasks(text: string): string[] {
+  const out: string[] = []
+  for (const raw of text.split(/\r\n|\r|\n/)) {
+    let line = raw.trim().replace(/^(?:[-*•]|\d+[.)])\s+/, '')
+    if (/^\[[xX]\]/.test(line)) continue
+    line = line.replace(/^\[ \]\s*/, '').trim()
+    if (line) out.push(line)
+  }
+  return out
+}
+
+export function addTasks(projectId: string, texts: string[]): void {
+  const now = Date.now()
+  const added: Task[] = texts
+    .map((text) => text.trim())
+    .filter(Boolean)
+    .map((text) => ({ id: uid(), projectId, text, done: false, createdAt: now, doneAt: null }))
+  if (!added.length) return
+  updateData((d) => ({ ...d, tasks: [...d.tasks, ...added] }))
+}
+
 export function patchTask(id: string, patch: Partial<Task>): void {
   updateData((d) => ({ ...d, tasks: d.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t)) }))
 }

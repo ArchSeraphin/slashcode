@@ -3,6 +3,7 @@ import type { HistoryEntry, Project } from '@shared/types'
 import {
   addNote,
   addTask,
+  addTasks,
   api,
   newSession,
   patchNote,
@@ -11,6 +12,7 @@ import {
   removeTask,
   sendToActiveSession,
   setUI,
+  splitPastedTasks,
   timeAgo,
   toggleTask,
   useStore,
@@ -122,6 +124,16 @@ function Tasks({ project }: { project: Project }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
+          onPaste={(e) => {
+            // A single-line input would flatten a pasted list into one task:
+            // several lines become several tasks instead.
+            const pasted = e.clipboardData.getData('text')
+            if (!/[\r\n]/.test(pasted.trim())) return
+            const lines = splitPastedTasks(pasted)
+            if (!lines.length) return
+            e.preventDefault()
+            addTasks(project.id, lines)
+          }}
         />
         <button className="btn small" onClick={submit} disabled={!text.trim()}>
           Ajouter
