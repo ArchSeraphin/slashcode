@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SlashCode, tes sessions Claude Code façon Windows XP</title>
+<meta name="description" content="SlashCode range tes sessions Claude Code par projet : vrais terminaux, écran partagé, tâches, notes, dictée et notifications Mac et iPhone. Gratuit pour Mac Apple Silicon, habillé en Windows XP.">
+<meta name="theme-color" content="#245edb">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SlashCode, tes sessions Claude Code façon Windows XP">
+<meta property="og:description" content="Un organisateur gratuit pour Mac : chaque projet garde ses terminaux Claude, ses tâches, ses notes, et l'app te prévient quand Claude t'attend.">
+<meta property="og:image" content="img/og.png">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SlashCode",
+  "description": "Organisateur de sessions Claude Code pour Mac, habillé en Windows XP.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "macOS (Apple Silicon)",
+  "softwareVersion": "0.1.0",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "author": { "@type": "Organization", "name": "VoilaVoila" },
+  "codeRepository": "https://github.com/ArchSeraphin/slashcode",
+  "license": "https://polyformproject.org/licenses/noncommercial/1.0.0/"
+}
+</script>
+</head>
+<body>
+
+<!-- The desktop wallpaper: a sky and a green hill, drawn here rather than borrowed. -->
+<div class="wallpaper" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id="w-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1f62d0"/>
+        <stop offset=".45" stop-color="#4f93e6"/>
+        <stop offset=".8" stop-color="#a8d0f6"/>
+        <stop offset="1" stop-color="#d4e9fb"/>
+      </linearGradient>
+      <linearGradient id="w-hill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#78c03e"/>
+        <stop offset=".5" stop-color="#4f9d2a"/>
+        <stop offset="1" stop-color="#2c6f17"/>
+      </linearGradient>
+      <linearGradient id="w-hill2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#9ccf5c"/>
+        <stop offset="1" stop-color="#5a9e33"/>
+      </linearGradient>
+      <filter id="w-blur" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="18"/></filter>
+    </defs>
+    <rect width="1600" height="900" fill="url(#w-sky)"/>
+    <g fill="#fff" filter="url(#w-blur)">
+      <ellipse cx="260" cy="180" rx="210" ry="38" opacity=".55"/>
+      <ellipse cx="420" cy="215" rx="140" ry="26" opacity=".4"/>
+      <ellipse cx="1180" cy="120" rx="240" ry="34" opacity=".45"/>
+      <ellipse cx="1380" cy="300" rx="170" ry="30" opacity=".35"/>
+      <ellipse cx="760" cy="330" rx="200" ry="24" opacity=".3"/>
+    </g>
+    <path d="M520 700C820 600 1180 560 1600 590V900H520z" fill="url(#w-hill2)"/>
+    <path d="M0 690C260 600 560 580 860 640S1360 760 1600 720V900H0z" fill="url(#w-hill)"/>
+  </svg>
+</div>
+
+<!-- Icon sprite. Every icon sits on a 32x32 grid, the same drawings as in the app. -->
+<svg class="sprite" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-fold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe48a"/><stop offset="1" stop-color="#eab12f"/></linearGradient>
+    <linearGradient id="g-slash" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d8cff"/><stop offset="1" stop-color="#0b4fd6"/></linearGradient>
+    <linearGradient id="g-screen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5fa8ff"/><stop offset="1" stop-color="#0c4fd0"/></linearGradient>
+    <linearGradient id="g-green" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ad468"/><stop offset="1" stop-color="#2a8c2e"/></linearGradient>
+    <linearGradient id="g-mug" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d6d0bd"/><stop offset=".4" stop-color="#fff"/><stop offset="1" stop-color="#c9c2ab"/></linearGradient>
+    <linearGradient id="g-mic" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a929e"/><stop offset=".45" stop-color="#f4f6f9"/><stop offset="1" stop-color="#7d8591"/></linearGradient>
+  </defs>
+  <symbol id="i-logo" viewBox="0 0 256 256">
+    <path d="M38 44h52c5 0 9 2 12 6l12 14h104c8 0 14 6 14 14v120c0 8-6 14-14 14H38c-8 0-14-6-14-14V58c0-8 6-14 14-14z" fill="url(#g-fold)" stroke="#8a5d08" stroke-width="13" stroke-linejoin="round"/>
+    <path d="M145 82h48l-54 120H91z" fill="url(#g-slash)" stroke="#08308f" stroke-width="9" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-download" viewBox="0 0 32 32">
+    <rect x="3" y="20" width="26" height="9" rx="2" fill="#d9dde6" stroke="#5a6170"/>
+    <rect x="22" y="24" width="4" height="2" rx=".5" fill="#3cb043"/>
+    <path d="M12 2.5h8v9h5.5L16 22 6.5 11.5H12z" fill="url(#g-green)" stroke="#1d6d22" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-github" viewBox="0 0 32 32">
+    <rect x="2.5" y="2.5" width="27" height="27" rx="5" fill="#fff" stroke="#5a6170"/>
+    <path transform="translate(5 5) scale(1.375)" fill="#1b1f24" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+  </symbol>
+  <symbol id="i-coffee" viewBox="0 0 32 32">
+    <path d="M11 2.5c-1.6 2 1.6 3.2 0 5.5M16 2.5c-1.6 2 1.6 3.2 0 5.5" stroke="#8fa0bf" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="15" cy="28" rx="12.5" ry="2.5" fill="#d9dde6" stroke="#5a6170"/>
+    <path d="M22.5 13.5h2a3.8 3.8 0 0 1 0 7.6h-2.5" fill="none" stroke="#6e4f22" stroke-width="2.2"/>
+    <path d="M5.5 11h19v11.5a5 5 0 0 1-5 5h-9a5 5 0 0 1-5-5z" fill="url(#g-mug)" stroke="#6e4f22"/>
+    <ellipse cx="15" cy="11" rx="9.5" ry="2.2" fill="#7a4517" stroke="#6e4f22"/>
+    <path d="M8.5 16v6" stroke="#e2552c" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-notepad" viewBox="0 0 32 32">
+    <rect x="6" y="3" width="20" height="26" rx="1.5" fill="#fff" stroke="#6c7b95"/>
+    <rect x="6" y="3" width="20" height="5" fill="#77a3f0" stroke="#3c63b8"/>
+    <path d="M9 12h14M9 16h14M9 20h14M9 24h10" stroke="#9aa8c4"/>
+  </symbol>
+  <symbol id="i-folder" viewBox="0 0 32 32">
+    <path d="M2 8.5c0-1 .8-1.8 1.8-1.8h7.4l2.6 2.6h14.4c1 0 1.8.8 1.8 1.8v14.6c0 1-.8 1.8-1.8 1.8H3.8c-1 0-1.8-.8-1.8-1.8z" fill="#f2c14e" stroke="#b98a1c"/>
+    <path d="M2.6 13.2h26.8v12.5c0 .7-.6 1.3-1.3 1.3H3.9c-.7 0-1.3-.6-1.3-1.3z" fill="#f8d36a" stroke="#c99a25"/>
+    <path d="M4 14.6h24" stroke="#fffbe8" stroke-width="1.2"/>
+  </symbol>
+  <symbol id="i-computer" viewBox="0 0 32 32">
+    <rect x="3" y="3" width="26" height="19" rx="2" fill="#d9dde6" stroke="#5a6170"/>
+    <rect x="5.5" y="5.5" width="21" height="14" fill="url(#g-screen)" stroke="#2a3c6b"/>
+    <path d="M6.5 15c4-4 8-6 19-8" stroke="#9fd0ff" stroke-width="1.4" fill="none" opacity=".7"/>
+    <path d="M12 22h8l1.5 4h-11z" fill="#b8bec9" stroke="#5a6170"/>
+    <rect x="7" y="26" width="18" height="3" rx="1" fill="#d9dde6" stroke="#5a6170"/>
+  </symbol>
+  <symbol id="i-console" viewBox="0 0 32 32">
+    <rect x="2.5" y="4.5" width="27" height="23" rx="2" fill="#0d0d0d" stroke="#45505f"/>
+    <rect x="2.5" y="4.5" width="27" height="5" rx="2" fill="#2f6be6"/>
+    <path d="M6 14l4 3-4 3" stroke="#d6d6d6" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M12 21h8" stroke="#d6d6d6" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-layout" viewBox="0 0 32 32">
+    <rect x="2.5" y="4.5" width="27" height="23" rx="2" fill="#dfe8fb" stroke="#2a4f99"/>
+    <rect x="2.5" y="4.5" width="27" height="4" rx="2" fill="#2f6be6"/>
+    <rect x="5" y="10.5" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f"/>
+    <rect x="16.5" y="10.5" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f"/>
+    <rect x="5" y="18.25" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f"/>
+    <rect x="16.5" y="18.25" width="10.5" height="6.75" fill="#0d0d0d" stroke="#45505f"/>
+  </symbol>
+  <symbol id="i-bell" viewBox="0 0 32 32">
+    <path d="M16 4c-5 0-8 3.5-8 9v6l-3 4h22l-3-4v-6c0-5.5-3-9-8-9z" fill="#ffd23b" stroke="#a87700"/>
+    <circle cx="16" cy="26" r="3" fill="#a87700"/>
+  </symbol>
+  <symbol id="i-mic" viewBox="0 0 32 32">
+    <rect x="11" y="2.5" width="10" height="17" rx="5" fill="url(#g-mic)" stroke="#4a515c"/>
+    <path d="M12.5 8h7M12.5 11h7M12.5 14h7" stroke="#5e6672" stroke-width=".9"/>
+    <path d="M7.5 15a8.5 8.5 0 0 0 17 0" fill="none" stroke="#3d4450" stroke-width="2" stroke-linecap="round"/>
+    <path d="M16 23.5v4.5M10.5 29h11" stroke="#3d4450" stroke-width="2.2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-tasks" viewBox="0 0 32 32">
+    <rect x="5" y="3" width="22" height="26" rx="1.5" fill="#fffef4" stroke="#7a6f4c"/>
+    <rect x="11" y="1.5" width="10" height="4" rx="1" fill="#c9ccd4" stroke="#5f6675"/>
+    <path d="M8.5 11.5l2 2 3.5-4M8.5 18.5l2 2 3.5-4" stroke="#26a32b" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M16 12h8M16 19h8M9 25h15" stroke="#8a8f9c" stroke-width="1.4"/>
+  </symbol>
+  <symbol id="i-moon" viewBox="0 0 32 32">
+    <rect x="3" y="3" width="26" height="26" rx="5" fill="#1d2b57" stroke="#0a1230"/>
+    <path d="M19.5 7.5a9 9 0 1 0 5.5 14 7.5 7.5 0 0 1-5.5-14z" fill="#ffd23b" stroke="#a87700"/>
+    <circle cx="9" cy="9" r="1" fill="#fff"/><circle cx="24" cy="11" r=".8" fill="#fff"/>
+  </symbol>
+  <symbol id="i-keyboard" viewBox="0 0 32 32">
+    <rect x="1.5" y="8.5" width="29" height="16" rx="2" fill="#ecebe4" stroke="#5a6170"/>
+    <path d="M4.5 12h2.5v2.5H4.5zM8.5 12H11v2.5H8.5zM12.5 12H15v2.5h-2.5zM16.5 12H19v2.5h-2.5zM20.5 12H23v2.5h-2.5zM24.5 12h3v2.5h-3zM4.5 16h4v2.5h-4zM10 16h2.5v2.5H10zM14 16h2.5v2.5H14zM18 16h2.5v2.5H18zM22 16h5.5v2.5H22zM8.5 20h15v2h-15z" fill="#fff" stroke="#8a91a0" stroke-width=".8"/>
+  </symbol>
+  <symbol id="i-help" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="12.5" fill="#2f6be6" stroke="#173e93"/>
+    <path d="M12 12.5a4 4 0 1 1 5.5 3.7c-1 .5-1.5 1.2-1.5 2.3v1" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <circle cx="16" cy="24" r="1.8" fill="#fff"/>
+  </symbol>
+  <symbol id="i-info" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="12.5" fill="#2f6be6" stroke="#173e93"/>
+    <circle cx="16" cy="10" r="2" fill="#fff"/>
+    <path d="M16 14.5v9" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-warning" viewBox="0 0 32 32">
+    <path d="M16 3l14 25H2z" fill="#ffd23b" stroke="#a87700" stroke-linejoin="round"/>
+    <path d="M16 11v9" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="16" cy="24" r="1.8" fill="#222"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="12.5" fill="#3cb043" stroke="#1d6d22"/>
+    <path d="M9.5 16.5l4.5 4.5 8.5-9" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-star" viewBox="0 0 32 32">
+    <path d="M16 3l3.9 8 8.6 1.2-6.3 6 1.6 8.6L16 22.6l-7.8 4.2 1.6-8.6-6.3-6L12.1 11z" fill="#ffd23b" stroke="#c98a07" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-history" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="12" fill="#fff" stroke="#3a5c8f" stroke-width="2"/>
+    <path d="M16 8v8l5 3" stroke="#1b3f8b" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-import" viewBox="0 0 32 32">
+    <path d="M2 9c0-1 .8-1.8 1.8-1.8h7.4l2.6 2.6h14.4c1 0 1.8.8 1.8 1.8v14c0 1-.8 1.8-1.8 1.8H3.8c-1 0-1.8-.8-1.8-1.8z" fill="#f2c14e" stroke="#b98a1c"/>
+    <path d="M16 12v10M11.5 17.5l4.5 4.5 4.5-4.5" stroke="#1f6fd6" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-run" viewBox="0 0 32 32">
+    <rect x="3" y="6" width="26" height="20" rx="2" fill="#fff" stroke="#3a5c8f"/>
+    <rect x="3" y="6" width="26" height="5" fill="#2f6be6"/>
+    <path d="M8 16h12M16 13l4 3-4 3" stroke="#2a8c2e" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-play" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="12.5" fill="#3cb043" stroke="#1d6d22"/>
+    <path d="M13 10l9 6-9 6z" fill="#fff"/>
+  </symbol>
+  <symbol id="i-back" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="12.5" fill="#3cb043" stroke="#1d6d22"/>
+    <path d="M22 16H11M15.5 11L10.5 16l5 5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-forward" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="12.5" fill="#3cb043" stroke="#1d6d22"/>
+    <path d="M10 16h11M16.5 11l5 5-5 5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-power" viewBox="0 0 32 32">
+    <rect x="3" y="3" width="26" height="26" rx="4" fill="#e2552c" stroke="#8f2a0d"/>
+    <path d="M11 11a7.5 7.5 0 1 0 10 0" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M16 7v9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<a class="skip" href="#contenu">Aller au contenu</a>
+
+<main id="contenu">
+
+  <!-- ============ Bienvenue ============ -->
+  <section class="hero" id="bienvenue" aria-labelledby="titre">
+    <nav class="desk-icons" aria-label="Icônes du bureau">
+      <a class="desk-icon" href="https://github.com/ArchSeraphin/slashcode/releases/latest">
+        <svg width="48" height="48"><use href="#i-download"/></svg><span>Télécharger SlashCode</span>
+      </a>
+      <a class="desk-icon" href="https://github.com/ArchSeraphin/slashcode">
+        <svg width="48" height="48"><use href="#i-github"/></svg><span>Code source sur GitHub</span>
+      </a>
+      <a class="desk-icon" href="#cafe">
+        <svg width="48" height="48"><use href="#i-coffee"/></svg><span>Offrir un café</span>
+      </a>
+      <a class="desk-icon" href="#aide">
+        <svg width="48" height="48"><use href="#i-notepad"/></svg><span>Lisez-moi.txt</span>
+      </a>
+    </nav>
+
+    <div class="hero-stack">
+      <article class="win win-welcome" data-win="bienvenue">
+        <header class="title-bar">
+          <svg class="tb-ico" width="18" height="18"><use href="#i-logo"/></svg>
+          <span class="title-text">Bienvenue dans SlashCode</span>
+          <div class="title-controls" data-controls></div>
+        </header>
+        <div class="win-body welcome-body">
+          <div class="welcome-text">
+            <h1 id="titre">Tes sessions Claude Code, rangées comme sur ton bureau.</h1>
+            <p class="lede">SlashCode est un organisateur gratuit pour Mac. Chaque projet garde ses terminaux Claude, ses tâches, ses notes et son historique, et l'app te prévient dès que Claude t'attend. Le tout dans un Windows XP redessiné à la main.</p>
+            <div class="cta-row">
+              <a class="btn-start" href="https://github.com/ArchSeraphin/slashcode/releases/latest">
+                <svg width="26" height="26"><use href="#i-download"/></svg>
+                <span>Télécharger pour Mac</span>
+              </a>
+              <a class="btn-xp" href="https://github.com/ArchSeraphin/slashcode">
+                <svg width="18" height="18"><use href="#i-github"/></svg>
+                Voir le code sur GitHub
+              </a>
+            </div>
+            <p class="fine">Version 0.1.0. Mac Apple Silicon (M1 et suivants), avec <a href="https://docs.claude.com/en/docs/claude-code">Claude Code</a> installé.</p>
+          </div>
+          <img class="welcome-icon" src="img/app-icon.svg" width="220" height="220" alt="">
+        </div>
+      </article>
+
+      <figure class="shot shot-hero">
+        <img src="img/captures/ecran-partage.webp" srcset="img/captures/ecran-partage.webp 1440w, img/captures/ecran-partage@2x.webp 2880w" sizes="(min-width: 1200px) 860px, 100vw" width="1440" height="860" alt="SlashCode avec quatre sessions Claude Code côte à côte dans le projet Facturo : Opus, Sonnet, Haiku et Sonnet.">
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ Visite guidée ============ -->
+  <section class="block" id="visite" aria-labelledby="visite-titre">
+    <article class="win win-explorer" data-win="visite">
+      <header class="title-bar">
+        <svg class="tb-ico" width="18" height="18"><use href="#i-computer"/></svg>
+        <span class="title-text">Visite guidée de SlashCode</span>
+        <div class="title-controls" data-controls></div>
+      </header>
+      <div class="win-content">
+        <div class="toolbar">
+          <button type="button" class="tool" data-tour="prev"><svg width="22" height="22"><use href="#i-back"/></svg><span>Précédente</span></button>
+          <button type="button" class="tool" data-tour="next"><svg width="22" height="22"><use href="#i-forward"/></svg><span>Suivante</span></button>
+        </div>
+        <div class="address">
+          <span class="address-label">Adresse</span>
+          <span class="address-field"><svg width="16" height="16"><use href="#i-folder"/></svg><span data-address>Poste de travail\Visite guidée</span></span>
+        </div>
+        <div class="explorer">
+          <aside class="taskpane">
+            <div class="pane-box">
+              <h2 class="pane-title" id="visite-titre">Ce que fait SlashCode</h2>
+              <div class="pane-list" role="tablist" aria-label="Chapitres de la visite" aria-orientation="vertical">
+                <button type="button" role="tab" id="tab-ranger" aria-controls="ch-ranger" aria-selected="true"><svg width="18" height="18"><use href="#i-folder"/></svg>Ranger tes projets</button>
+                <button type="button" role="tab" id="tab-sessions" aria-controls="ch-sessions" aria-selected="false"><svg width="18" height="18"><use href="#i-layout"/></svg>Lancer des sessions</button>
+                <button type="button" role="tab" id="tab-alertes" aria-controls="ch-alertes" aria-selected="false"><svg width="18" height="18"><use href="#i-bell"/></svg>Être prévenu</button>
+                <button type="button" role="tab" id="tab-dicter" aria-controls="ch-dicter" aria-selected="false"><svg width="18" height="18"><use href="#i-mic"/></svg>Dicter un prompt</button>
+                <button type="button" role="tab" id="tab-taches" aria-controls="ch-taches" aria-selected="false"><svg width="18" height="18"><use href="#i-tasks"/></svg>Tâches et notes</button>
+                <button type="button" role="tab" id="tab-sombre" aria-controls="ch-sombre" aria-selected="false"><svg width="18" height="18"><use href="#i-moon"/></svg>Mode sombre</button>
+              </div>
+            </div>
+            <div class="pane-box pane-details">
+              <h3 class="pane-title">Détails</h3>
+              <dl>
+                <dt>SlashCode</dt><dd>Organisateur de sessions</dd>
+                <dt>Version</dt><dd>0.1.0</dd>
+                <dt>Système</dt><dd>macOS, Apple Silicon</dd>
+                <dt>Prix</dt><dd>Gratuit</dd>
+              </dl>
+            </div>
+          </aside>
+
+          <div class="explorer-view">
+            <div class="chapter" role="tabpanel" id="ch-ranger" aria-labelledby="tab-ranger" data-path="Ranger tes projets">
+              <h3>Un dossier par projet, des groupes pour s'y retrouver</h3>
+              <p>Clients, Produits, Perso : tu crées les groupes qui te ressemblent et tu y ranges tes dossiers de travail. Le Poste de travail montre d'un coup d'œil ce qui tourne, ce qui attend et ce qui reste à faire.</p>
+              <figure class="shot"><img src="img/captures/accueil.webp" srcset="img/captures/accueil.webp 1440w, img/captures/accueil@2x.webp 2880w" sizes="(min-width: 1200px) 860px, 100vw" width="1440" height="860" loading="lazy" alt="Poste de travail de SlashCode avec ses groupes de projets."></figure>
+              <ul class="feats">
+                <li><svg width="32" height="32"><use href="#i-import"/></svg><div><b>Import en un clic</b>Au premier lancement, SlashCode liste tous les dossiers où Claude Code a déjà servi.</div></li>
+                <li><svg width="32" height="32"><use href="#i-folder"/></svg><div><b>Glisser, déposer</b>Un dossier du Finder lâché sur un groupe devient un projet. Favoris, couleurs et archives en plus.</div></li>
+                <li><svg width="32" height="32"><use href="#i-run"/></svg><div><b>Exécuter… avec <kbd>⌘K</kbd></b>Tape trois lettres, tu es dans le bon projet ou la bonne session.</div></li>
+              </ul>
+            </div>
+
+            <div class="chapter" role="tabpanel" id="ch-sessions" aria-labelledby="tab-sessions" data-path="Lancer des sessions">
+              <h3>De vrais terminaux, jusqu'à quatre à l'écran</h3>
+              <p>Chaque session est un vrai terminal qui lance <code>claude</code> : toutes les fonctions du CLI restent là. Double-clic sur un projet et Claude démarre dans le bon dossier.</p>
+              <figure class="shot"><img src="img/captures/ecran-partage.webp" srcset="img/captures/ecran-partage.webp 1440w, img/captures/ecran-partage@2x.webp 2880w" sizes="(min-width: 1200px) 860px, 100vw" width="1440" height="860" loading="lazy" alt="Quatre sessions Claude Code affichées côte à côte dans un projet SlashCode."></figure>
+              <ul class="feats">
+                <li><svg width="32" height="32"><use href="#i-layout"/></svg><div><b>Écran partagé</b>1, 2, 3 ou 4 sessions à la fois avec <kbd>⌥⌘1</kbd> à <kbd>⌥⌘4</kbd>. Chaque volet est une petite fenêtre avec sa barre de titre.</div></li>
+                <li><svg width="32" height="32"><use href="#i-console"/></svg><div><b>Le bon modèle en un clic</b>Fable, Opus, Sonnet ou Haiku, avec un modèle et un mode d'autorisation par défaut propres à chaque projet.</div></li>
+                <li><svg width="32" height="32"><use href="#i-history"/></svg><div><b>Tout reprendre</b>Après un redémarrage, un bouton relance chaque conversation là où elle s'était arrêtée.</div></li>
+              </ul>
+            </div>
+
+            <div class="chapter" role="tabpanel" id="ch-alertes" aria-labelledby="tab-alertes" data-path="Être prévenu">
+              <h3>Claude t'attend ? Tu le sais tout de suite.</h3>
+              <p>Quand Claude demande une autorisation ou a fini son tour, SlashCode te le dit : notification macOS, bulle dans la barre des tâches, bouton qui clignote en orange, badge sur l'icône du Dock. Le message dit quoi : la commande à autoriser, ou le début de la réponse.</p>
+              <div class="demo">
+                <button type="button" class="btn-xp" data-notify><svg width="18" height="18"><use href="#i-bell"/></svg>Essayer une notification</button>
+                <span class="demo-hint">La bulle s'affiche en bas à droite, comme dans l'app.</span>
+              </div>
+              <figure class="shot"><img src="img/captures/notification.webp" srcset="img/captures/notification.webp 1440w, img/captures/notification@2x.webp 2880w" sizes="(min-width: 1200px) 860px, 100vw" width="1440" height="860" loading="lazy" alt="Claude a fini son tour dans une session : la bulle de notification reprend le début de sa réponse, et le volet passe en orange."></figure>
+              <ul class="feats">
+                <li><svg width="32" height="32"><use href="#i-bell"/></svg><div><b>Aussi sur l'iPhone</b>Avec Bark ou ntfy, et seulement quand tu n'es pas devant le Mac (écran verrouillé ou deux minutes sans activité).</div></li>
+                <li><svg width="32" height="32"><use href="#i-check"/></svg><div><b>Ta config Claude reste intacte</b>SlashCode passe ses hooks à chaque session, sans toucher à tes réglages.</div></li>
+                <li><svg width="32" height="32"><use href="#i-run"/></svg><div><b><kbd>⌘⇧A</kbd> pour y aller</b>Saute directement à la prochaine session qui attend une réponse.</div></li>
+              </ul>
+            </div>
+
+            <div class="chapter" role="tabpanel" id="ch-dicter" aria-labelledby="tab-dicter" data-path="Dicter un prompt">
+              <h3>Parle à Claude, il t'écoute</h3>
+              <p>Appuie sur <kbd>⌘D</kbd> et parle : le texte s'affiche en direct, tu le corriges si besoin, <kbd>↩</kbd> l'envoie à Claude et <kbd>⌘D</kbd> l'insère sans l'envoyer. Sur macOS 26, la reconnaissance vocale d'Apple tourne entièrement sur le Mac, sans Siri ni connexion.</p>
+              <figure class="shot"><img src="img/captures/dictee.webp" srcset="img/captures/dictee.webp 1440w, img/captures/dictee@2x.webp 2880w" sizes="(min-width: 1200px) 860px, 100vw" width="1440" height="860" loading="lazy" alt="Barre de dictée ouverte sur une session Claude : la phrase dictée s'affiche avec les boutons Insérer, Envoyer et Annuler."></figure>
+            </div>
+
+            <div class="chapter" role="tabpanel" id="ch-taches" aria-labelledby="tab-taches" data-path="Tâches et notes">
+              <h3>Tes idées à côté de Claude, pas dans un autre logiciel</h3>
+              <p>Chaque projet a sa liste de tâches, ses notes et l'historique de ses conversations, dans un panneau qui s'ouvre avec <kbd>⌘J</kbd>.</p>
+              <figure class="shot"><img src="img/captures/taches.webp" srcset="img/captures/taches.webp 1440w, img/captures/taches@2x.webp 2880w" sizes="(min-width: 1200px) 860px, 100vw" width="1440" height="860" loading="lazy" alt="Un projet ouvert avec une session Opus et le panneau Tâches et notes à droite."></figure>
+              <ul class="feats">
+                <li><svg width="32" height="32"><use href="#i-tasks"/></svg><div><b>Tâches par projet</b>▶ lance une tâche comme premier message d'une nouvelle session, ➤ l'écrit dans la session active. Coller plusieurs lignes crée une tâche par ligne.</div></li>
+                <li><svg width="32" height="32"><use href="#i-notepad"/></svg><div><b>Notes</b>Enregistrées toutes seules, envoyables à Claude d'un clic.</div></li>
+                <li><svg width="32" height="32"><use href="#i-history"/></svg><div><b>Historique</b>Toutes les conversations Claude du dossier, reprises en un clic.</div></li>
+              </ul>
+            </div>
+
+            <div class="chapter" role="tabpanel" id="ch-sombre" aria-labelledby="tab-sombre" data-path="Mode sombre">
+              <h3>Royale Noir, pour les soirées longues</h3>
+              <p>Le thème noir de l'époque, refait pour SlashCode. Choisis clair, sombre ou comme macOS dans Paramètres, Apparence.</p>
+              <figure class="shot"><img src="img/captures/sombre.webp" srcset="img/captures/sombre.webp 1440w, img/captures/sombre@2x.webp 2880w" sizes="(min-width: 1200px) 860px, 100vw" width="1440" height="860" loading="lazy" alt="SlashCode en mode sombre Royale Noir."></figure>
+            </div>
+          </div>
+        </div>
+        <div class="statusbar"><span data-status>6 chapitres</span><span>Poste de travail</span></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ Installation ============ -->
+  <section class="block" id="installer" aria-labelledby="installer-titre">
+    <article class="win win-wizard" data-win="installer">
+      <header class="title-bar">
+        <svg class="tb-ico" width="18" height="18"><use href="#i-download"/></svg>
+        <span class="title-text">Assistant Installation de SlashCode</span>
+        <div class="title-controls" data-controls></div>
+      </header>
+      <div class="win-content wizard">
+        <div class="wizard-side" aria-hidden="true">
+          <img src="img/app-icon.svg" width="120" height="120" alt="">
+        </div>
+        <div class="wizard-main">
+          <div class="wizard-head">
+            <h2 id="installer-titre">Installer SlashCode en quatre étapes</h2>
+            <ol class="wizard-steps" aria-label="Étapes">
+              <li><button type="button" data-step="0" aria-current="step">Vérifier</button></li>
+              <li><button type="button" data-step="1">Télécharger</button></li>
+              <li><button type="button" data-step="2">Ouvrir</button></li>
+              <li><button type="button" data-step="3">Importer</button></li>
+            </ol>
+          </div>
+
+          <div class="wizard-pages">
+            <div class="step" data-page="0">
+              <h3>Ce qu'il te faut</h3>
+              <ul class="checks">
+                <li><svg width="20" height="20"><use href="#i-check"/></svg><span>Un Mac avec une puce Apple (M1 ou plus récent).</span></li>
+                <li><svg width="20" height="20"><use href="#i-check"/></svg><span>Le CLI <a href="https://docs.claude.com/en/docs/claude-code">Claude Code</a> installé : la commande <code>claude</code> doit marcher dans le Terminal.</span></li>
+                <li><svg width="20" height="20"><use href="#i-check"/></svg><span>Ton compte Claude habituel. SlashCode n'ajoute aucun abonnement.</span></li>
+              </ul>
+            </div>
+            <div class="step" data-page="1">
+              <h3>Télécharge l'app</h3>
+              <p>Prends le fichier <code>.zip</code> de la dernière version sur GitHub, ouvre-le, puis glisse <b>SlashCode.app</b> dans ton dossier Applications.</p>
+              <p><a class="btn-xp" href="https://github.com/ArchSeraphin/slashcode/releases/latest"><svg width="18" height="18"><use href="#i-download"/></svg>Télécharger la dernière version</a></p>
+            </div>
+            <div class="step" data-page="2">
+              <h3>Ouvre-la une première fois</h3>
+              <p>SlashCode n'est pas encore signé par Apple, alors macOS le bloque au premier lancement. Deux façons de passer :</p>
+              <ul class="checks">
+                <li><svg width="20" height="20"><use href="#i-info"/></svg><span>Ouvre Réglages Système, Confidentialité et sécurité, et clique sur « Ouvrir quand même » en face de SlashCode.</span></li>
+                <li><svg width="20" height="20"><use href="#i-info"/></svg><span>Ou colle cette ligne dans le Terminal :</span></li>
+              </ul>
+              <div class="cmd"><code>xattr -dr com.apple.quarantine /Applications/SlashCode.app</code><button type="button" class="btn-xp btn-small" data-copy>Copier</button></div>
+            </div>
+            <div class="step" data-page="3">
+              <h3>Importe tes projets</h3>
+              <p>Au premier lancement, SlashCode liste les dossiers où tu as déjà utilisé Claude Code. Coche ceux que tu veux, range-les dans des groupes, et double-clique sur un projet pour lancer Claude.</p>
+              <p class="done"><svg width="24" height="24"><use href="#i-check"/></svg>C'est installé. Bonne session.</p>
+            </div>
+          </div>
+
+          <div class="wizard-foot">
+            <button type="button" class="btn-xp" data-wiz="prev">&lt; Précédent</button>
+            <button type="button" class="btn-xp btn-default" data-wiz="next">Suivant &gt;</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="win win-cmd" data-win="sources" aria-labelledby="sources-titre">
+      <header class="title-bar">
+        <svg class="tb-ico" width="18" height="18"><use href="#i-console"/></svg>
+        <span class="title-text" id="sources-titre">Compiler depuis les sources</span>
+        <div class="title-controls" data-controls></div>
+      </header>
+      <div class="win-content cmd-body">
+<pre><span class="c"># Il faut Node.js 22+ et les outils Xcode.</span>
+git clone https://github.com/ArchSeraphin/slashcode.git
+cd slashcode
+npm install
+npm run dist
+codesign --force --deep -s - dist/mac-arm64/SlashCode.app
+cp -R dist/mac-arm64/SlashCode.app /Applications/</pre>
+        <button type="button" class="btn-xp btn-small cmd-copy" data-copy-pre>Copier</button>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ Raccourcis + café ============ -->
+  <div class="block pair">
+    <section id="raccourcis" aria-labelledby="raccourcis-titre">
+      <article class="win" data-win="raccourcis">
+        <header class="title-bar">
+          <svg class="tb-ico" width="18" height="18"><use href="#i-keyboard"/></svg>
+          <span class="title-text">Propriétés du clavier</span>
+          <div class="title-controls" data-controls></div>
+        </header>
+        <div class="win-content dialog-body">
+          <div class="tabs-strip" aria-hidden="true"><span class="tab-on">Raccourcis</span></div>
+          <div class="tab-panel">
+            <h2 id="raccourcis-titre">Moins de clics, plus de Claude</h2>
+            <table class="keys">
+              <tbody>
+                <tr><td><kbd>⌘K</kbd></td><td>Aller à un projet ou une session</td></tr>
+                <tr><td><kbd>⌘T</kbd></td><td>Nouvelle session dans le projet ouvert</td></tr>
+                <tr><td><kbd>⌘⇧A</kbd></td><td>Prochaine session qui attend</td></tr>
+                <tr><td><kbd>⌘1</kbd> à <kbd>⌘9</kbd></td><td>N-ième onglet du projet</td></tr>
+                <tr><td><kbd>⌥⌘1</kbd> à <kbd>⌥⌘4</kbd></td><td>1, 2, 3 ou 4 sessions à l'écran</td></tr>
+                <tr><td><kbd>⌘D</kbd></td><td>Dicter un prompt</td></tr>
+                <tr><td><kbd>⌘J</kbd></td><td>Afficher Tâches et notes</td></tr>
+                <tr><td><kbd>⌘W</kbd></td><td>Fermer la session active</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section id="cafe" aria-labelledby="cafe-titre">
+      <article class="win win-coffee" data-win="cafe">
+        <header class="title-bar">
+          <svg class="tb-ico" width="18" height="18"><use href="#i-coffee"/></svg>
+          <span class="title-text">Offrir un café</span>
+          <div class="title-controls" data-controls></div>
+        </header>
+        <div class="win-content dialog-body coffee-body">
+          <svg class="coffee-art" width="88" height="88" aria-hidden="true"><use href="#i-coffee"/></svg>
+          <div>
+            <h2 id="cafe-titre">SlashCode est gratuit.</h2>
+            <p>Pas de version payante, pas de compte, pas de publicité. Si l'app te fait gagner du temps, tu peux offrir un café à celui qui l'a construite. Ça finance les soirées passées à redessiner des boutons de 2001.</p>
+            <div class="cta-row">
+              <a class="btn-xp btn-default btn-big" href="https://buymeacoffee.com/archseraphin"><svg width="20" height="20"><use href="#i-coffee"/></svg>Offrir un café</a>
+              <a class="btn-xp btn-big" href="https://github.com/ArchSeraphin/slashcode"><svg width="20" height="20"><use href="#i-star"/></svg>Mettre une étoile sur GitHub</a>
+            </div>
+            <p class="fine">Une étoile, un retour ou un bug signalé, ça aide aussi.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <!-- ============ Aide ============ -->
+  <section class="block" id="aide" aria-labelledby="aide-titre">
+    <article class="win win-help" data-win="aide">
+      <header class="title-bar">
+        <svg class="tb-ico" width="18" height="18"><use href="#i-help"/></svg>
+        <span class="title-text">Aide et support</span>
+        <div class="title-controls" data-controls></div>
+      </header>
+      <div class="win-content">
+        <div class="help-banner">
+          <svg width="44" height="44"><use href="#i-help"/></svg>
+          <h2 id="aide-titre">Questions fréquentes</h2>
+        </div>
+        <div class="help-list">
+          <details open>
+            <summary>C'est vraiment gratuit ?</summary>
+            <p>Oui, pour un usage personnel, les études, la recherche, les associations et les organismes publics. SlashCode est publié sous licence <a href="https://github.com/ArchSeraphin/slashcode/blob/main/LICENSE.md">PolyForm Noncommercial 1.0.0</a> : tu peux lire, modifier et partager le code. Pour l'utiliser dans une entreprise à but lucratif, demande une licence en <a href="https://github.com/ArchSeraphin/slashcode/issues">ouvrant une issue</a>.</p>
+          </details>
+          <details>
+            <summary>Il faut un abonnement Claude ?</summary>
+            <p>SlashCode lance le CLI Claude Code que tu as déjà, avec ton compte. Il ne remplace rien et ne revend rien : il range tes sessions.</p>
+          </details>
+          <details>
+            <summary>Ça marche sur Windows ou sur un Mac Intel ?</summary>
+            <p>Pas pour l'instant : SlashCode tourne sur les Mac à puce Apple. Le style rappelle Windows XP, mais c'est bien une app Mac.</p>
+          </details>
+          <details>
+            <summary>SlashCode modifie-t-il ma configuration Claude ?</summary>
+            <p>Non. Les notifications passent par des hooks donnés à chaque session avec <code>--settings</code>. Ils préviennent un petit serveur local de l'app, protégé par un jeton aléatoire. Ton fichier de réglages Claude n'est jamais modifié.</p>
+          </details>
+          <details>
+            <summary>Où vont mes données ?</summary>
+            <p>Nulle part : projets, tâches et notes restent sur ton Mac, dans <code>~/Library/Application Support/SlashCode</code>. Seule exception, les notifications iPhone si tu les actives : elles passent par Bark ou ntfy, et tu peux héberger ton propre serveur Bark.</p>
+          </details>
+          <details>
+            <summary>Pourquoi Windows XP ?</summary>
+            <p>Parce que des dossiers jaunes dans des fenêtres bleues, avec une barre des tâches qui clignote quand quelqu'un t'attend, c'est exactement ce qu'il faut pour suivre six sessions à la fois. Le thème est redessiné à la main, sans aucun élément graphique de Microsoft.</p>
+          </details>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<footer class="ground">
+  <p><svg width="20" height="20" aria-hidden="true"><use href="#i-logo"/></svg> SlashCode, par <a href="https://voilavoila.tv">VoilaVoila</a>. Code source sur <a href="https://github.com/ArchSeraphin/slashcode">GitHub</a>.</p>
+  <p class="fine">SlashCode n'est affilié ni à Anthropic ni à Microsoft. Claude est une marque d'Anthropic, Windows XP une marque de Microsoft.</p>
+</footer>
+
+<!-- ============ Barre des tâches ============ -->
+<div class="taskbar" role="navigation" aria-label="Navigation principale">
+  <button type="button" class="start" aria-expanded="false" aria-controls="start-menu">
+    <svg width="20" height="20" aria-hidden="true"><use href="#i-logo"/></svg>démarrer
+  </button>
+
+  <div class="start-menu" id="start-menu" hidden>
+    <div class="start-head">
+      <span class="avatar"><svg width="30" height="30" aria-hidden="true"><use href="#i-logo"/></svg></span>
+      SlashCode
+    </div>
+    <div class="start-cols">
+      <ul class="start-left">
+        <li><a class="sitem" href="https://github.com/ArchSeraphin/slashcode/releases/latest"><svg width="32" height="32" aria-hidden="true"><use href="#i-download"/></svg><span class="stexts"><b>Télécharger SlashCode</b><span class="ssub">Pour Mac Apple Silicon</span></span></a></li>
+        <li><a class="sitem" href="https://github.com/ArchSeraphin/slashcode"><svg width="32" height="32" aria-hidden="true"><use href="#i-github"/></svg><span class="stexts"><b>Code source</b><span class="ssub">Sur GitHub</span></span></a></li>
+        <li><a class="sitem" href="#cafe"><svg width="32" height="32" aria-hidden="true"><use href="#i-coffee"/></svg><span class="stexts"><b>Offrir un café</b><span class="ssub">Pour soutenir le projet</span></span></a></li>
+      </ul>
+      <ul class="start-right">
+        <li><a class="sitem" href="#bienvenue"><svg width="22" height="22" aria-hidden="true"><use href="#i-logo"/></svg><b>Bienvenue</b></a></li>
+        <li><a class="sitem" href="#visite"><svg width="22" height="22" aria-hidden="true"><use href="#i-computer"/></svg><b>Visite guidée</b></a></li>
+        <li><a class="sitem" href="#installer"><svg width="22" height="22" aria-hidden="true"><use href="#i-import"/></svg><b>Installation</b></a></li>
+        <li><a class="sitem" href="#raccourcis"><svg width="22" height="22" aria-hidden="true"><use href="#i-keyboard"/></svg><b>Raccourcis</b></a></li>
+        <li class="start-sep" aria-hidden="true"></li>
+        <li><a class="sitem" href="#aide"><svg width="22" height="22" aria-hidden="true"><use href="#i-help"/></svg><b>Aide et support</b></a></li>
+      </ul>
+    </div>
+    <div class="start-foot">
+      <button type="button" data-close-start><svg width="22" height="22" aria-hidden="true"><use href="#i-power"/></svg>Fermer le menu</button>
+    </div>
+  </div>
+
+  <div class="task-buttons">
+    <a class="task-btn" href="#bienvenue" data-task="bienvenue"><svg width="16" height="16" aria-hidden="true"><use href="#i-logo"/></svg><span>Bienvenue</span></a>
+    <a class="task-btn" href="#visite" data-task="visite"><svg width="16" height="16" aria-hidden="true"><use href="#i-computer"/></svg><span>Visite guidée</span></a>
+    <a class="task-btn" href="#installer" data-task="installer"><svg width="16" height="16" aria-hidden="true"><use href="#i-download"/></svg><span>Installation</span></a>
+    <a class="task-btn" href="#raccourcis" data-task="raccourcis"><svg width="16" height="16" aria-hidden="true"><use href="#i-keyboard"/></svg><span>Raccourcis</span></a>
+    <a class="task-btn" href="#cafe" data-task="cafe"><svg width="16" height="16" aria-hidden="true"><use href="#i-coffee"/></svg><span>Offrir un café</span></a>
+    <a class="task-btn" href="#aide" data-task="aide"><svg width="16" height="16" aria-hidden="true"><use href="#i-help"/></svg><span>Aide</span></a>
+    <span class="task-btn flash" data-demo-task hidden><svg width="16" height="16" aria-hidden="true"><use href="#i-console"/></svg><span>site-vitrine</span></span>
+  </div>
+
+  <div class="tray">
+    <a href="https://github.com/ArchSeraphin/slashcode" title="SlashCode sur GitHub"><svg width="16" height="16"><use href="#i-github"/></svg><span class="sr">SlashCode sur GitHub</span></a>
+    <a href="#cafe" title="Offrir un café"><svg width="16" height="16"><use href="#i-coffee"/></svg><span class="sr">Offrir un café</span></a>
+    <time class="clock" data-clock>12:00</time>
+  </div>
+</div>
+
+<div class="balloon" role="status" aria-live="polite" hidden>
+  <div class="bhead">
+    <svg width="16" height="16" aria-hidden="true"><use href="#i-check" data-balloon-icon/></svg>
+    <b data-balloon-title></b>
+    <button type="button" class="x" aria-label="Fermer la bulle" data-balloon-close>×</button>
+  </div>
+  <div class="bbody" data-balloon-body></div>
+</div>
+
+<script src="main.js" defer></script>
+</body>
+</html>
