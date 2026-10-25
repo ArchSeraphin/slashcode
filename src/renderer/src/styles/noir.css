@@ -436,6 +436,68 @@
     color: var(--muted);
   }
 
+  /* ---------- GitHub tab ---------- */
+  .gh-branch {
+    border-color: #4a4c52;
+    background: #2a2b2f;
+    color: var(--muted);
+  }
+  .gh-row,
+  .gh-jobs {
+    border-bottom-color: #36383d;
+  }
+  .gh-row:hover {
+    background: #2a3247;
+  }
+  .gh-run.open > .gh-row {
+    background: #263049;
+  }
+  .gh-jobs {
+    background: #232530;
+  }
+  .gh-main .hmeta,
+  .gh-jobs.muted,
+  .gh-none {
+    color: var(--faint);
+  }
+  .gh-foot {
+    border-top-color: #33353a;
+  }
+  .gh-tag.local {
+    color: #b8cdf5;
+    border-color: #3f5a99;
+    background: #22304f;
+  }
+  .gh-tag.draft {
+    color: #c0c2c7;
+    border-color: #55585f;
+    background: #2f3034;
+  }
+  .gh-tag.ok {
+    color: #8fe08b;
+    border-color: #2f6b32;
+    background: #1e3320;
+  }
+  .gh-tag.warn {
+    color: #f0c27b;
+    border-color: #7a5a24;
+    background: #362a16;
+  }
+  .gh-tag.info {
+    color: #a9c2f5;
+    border-color: #3f5a99;
+    background: #1f2a44;
+  }
+  .gh-tag.ko {
+    color: #ff9c8c;
+    border-color: #7f3426;
+    background: #3a1f1a;
+  }
+  .empty code {
+    background: #2a2b2f;
+    border-color: #4a4c52;
+  }
+
   /* ---------- home ---------- */
   .home,
   .launcher {

@@ -38,6 +38,10 @@ export type IconName =
   | 'layout2'
   | 'layout3'
   | 'layout4'
+  | 'fail'
+  | 'neutral'
+  | 'pr'
+  | 'external'
 
 // Every icon is drawn on a 32×32 grid with the soft gradients and dark outlines of the Luna era.
 const D: Record<IconName, JSX.Element> = {
@@ -173,6 +177,35 @@ const D: Record<IconName, JSX.Element> = {
     <>
       <circle cx="16" cy="16" r="12.5" fill="#3cb043" stroke="#1d6d22" />
       <path d="M9.5 16.5l4.5 4.5 8.5-9" stroke="#fff" strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </>
+  ),
+  fail: (
+    <>
+      <circle cx="16" cy="16" r="12.5" fill="#e2552c" stroke="#8f2a0d" />
+      <path d="M11 11l10 10M21 11L11 21" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" />
+    </>
+  ),
+  neutral: (
+    <>
+      <circle cx="16" cy="16" r="12.5" fill="#a9adb5" stroke="#5f636b" />
+      <path d="M10 16h12" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" />
+    </>
+  ),
+  pr: (
+    <>
+      <path d="M9 9v14" stroke="#2b4a86" strokeWidth="2.6" />
+      <path d="M23 22v-8c0-2.8-2.2-5-5-5h-5" stroke="#2b4a86" strokeWidth="2.6" fill="none" />
+      <path d="M16.5 5l-4 4 4 4" stroke="#2b4a86" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="9" cy="6.5" r="3.6" fill="#7cc0ff" stroke="#173e93" />
+      <circle cx="9" cy="25.5" r="3.6" fill="#7cc0ff" stroke="#173e93" />
+      <circle cx="23" cy="25.5" r="3.6" fill="#5fd068" stroke="#1d6d22" />
+    </>
+  ),
+  external: (
+    <>
+      <rect x="4" y="8" width="20" height="20" rx="2" fill="#fff" stroke="#3a5c8f" strokeWidth="1.6" />
+      <rect x="4" y="8" width="20" height="4" fill="#2f6be6" stroke="#3a5c8f" strokeWidth="1.6" />
+      <path d="M15 17L28 4M20 4h8v8" stroke="#2a8c2e" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
   info: (

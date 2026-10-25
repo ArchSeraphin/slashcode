@@ -8,24 +8,32 @@ import { SessionManager } from './sessions'
 import { Dictation } from './dictation'
 import { discoverFolders, encodeProjectDir, lastReply, listHistory } from './history'
 import { pushPhone } from './push'
-import type { AppData, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
+import { ciPrompt, fetchJobs, GitHubWatcher, prPrompt, rerun } from './github'
+import type { AppData, GhRun, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
 
 app.setName('SlashCode')
 // Lets tests run against a throwaway data folder.
 if (process.env.SLASHCODE_USERDATA) app.setPath('userData', process.env.SLASHCODE_USERDATA)
 
 let win: BrowserWindow | null = null
+
+// Sessions keep writing while the window is gone (hidden, or torn down on quit).
+function send(channel: string, ...args: unknown[]): void {
+  if (win && !win.isDestroyed() && !win.webContents.isDestroyed()) win.webContents.send(channel, ...args)
+}
 let store: Store
 let quitting = false
 // What the user is looking at right now, to avoid notifying about it.
 let visibleSessionId: string | null = null
+// The project whose GitHub tab can be on screen, polled more often than the others.
+let visibleProjectId: string | null = null
 
 const sessions = new SessionManager({
   onData(id, data) {
-    win?.webContents.send('session:data', id, data)
+    send('session:data', id, data)
   },
   onUpdate(info) {
-    win?.webContents.send('session:update', info)
+    send('session:update', info)
     refreshBadge()
   },
   onHook(info, event, payload) {
@@ -38,11 +46,11 @@ const sessions = new SessionManager({
     } catch {
       // only a cache for the next launch
     }
-    win?.webContents.send('usage:update', next)
+    send('usage:update', next)
   }
 })
 
-const dictation = new Dictation((e) => win?.webContents.send('dictation:event', e))
+const dictation = new Dictation((e) => send('dictation:event', e))
 
 // Plan limits only arrive while a session runs, so keep the last ones for the next launch.
 let usage: Usage | null = null
@@ -68,12 +76,12 @@ function isAway(): boolean {
   return screenLocked || powerMonitor.getSystemIdleTime() >= AWAY_IDLE_SECONDS
 }
 
-function showNative(title: string, subtitle: string | undefined, body: string, sessionId?: string): boolean {
+function showNative(title: string, subtitle: string | undefined, body: string, onClick?: () => void): boolean {
   if (!Notification.isSupported()) return false
   const n = new Notification({ title, subtitle, body, silent: true })
   n.on('click', () => {
     showWindow()
-    if (sessionId) win?.webContents.send('ui:goto', sessionId)
+    onClick?.()
   })
   n.show()
   return true
@@ -115,14 +123,42 @@ function notify(info: LiveSession, payload: Record<string, unknown>): void {
         const reply = typeof payload.transcript_path === 'string' ? lastReply(payload.transcript_path) : ''
         body = (reply || 'Claude a terminé, à toi de jouer.') + (meta ? `\n${meta}` : '')
       }
-      win?.webContents.send('ui:balloon', { ...info, detail: body })
-      if (settings.notifyNative) showNative(title, subtitle, body, info.id)
+      send('ui:balloon', { ...info, detail: body })
+      if (settings.notifyNative) showNative(title, subtitle, body, () => send('ui:goto', info.id))
       if (settings.phoneEnabled && (settings.phoneWhen === 'always' || away)) {
         void pushPhone(settings, { kind: permission ? 'permission' : 'done', title, subtitle, body, group: title })
       }
     },
     permission ? 0 : 700
   )
+}
+
+const github = new GitHubWatcher({
+  pathOf: (id) => store.data.projects.find((p) => p.id === id)?.path ?? null,
+  watched: () => ({
+    visible: visibleProjectId,
+    background: [...new Set(sessions.list().filter((s) => s.status !== 'exited').map((s) => s.projectId))]
+  }),
+  onStatus: (id, status) => send('github:status', id, status),
+  onFinished: notifyRun
+})
+
+const RUN_VERDICT: Record<string, string> = { success: 'CI réussie', failure: 'CI en échec', neutral: 'CI annulée' }
+
+function notifyRun(projectId: string, run: GhRun): void {
+  const settings = store.data.settings
+  if (!settings.notifyCi) return
+  const project = store.data.projects.find((p) => p.id === projectId)
+  const title = project?.name ?? 'SlashCode'
+  const subtitle = `${RUN_VERDICT[run.state] ?? 'CI terminée'} · ${run.workflow}`
+  const body = `${run.title}\n${run.branch}`
+  send('github:finished', projectId, run)
+  const away = isAway()
+  const looking = !away && win?.isFocused() && visibleProjectId === projectId
+  if (settings.notifyNative && !looking) showNative(title, subtitle, body, () => send('ui:github', projectId))
+  if (settings.phoneEnabled && (settings.phoneWhen === 'always' || away)) {
+    void pushPhone(settings, { kind: 'done', title, subtitle, body, group: title })
+  }
 }
 
 function refreshBadge(): void {
@@ -155,13 +191,14 @@ function createWindow(): void {
     }
   })
   win.once('ready-to-show', () => win?.show())
-  win.on('maximize', () => win?.webContents.send('win:maximized', true))
-  win.on('unmaximize', () => win?.webContents.send('win:maximized', false))
+  win.on('maximize', () => send('win:maximized', true))
+  win.on('unmaximize', () => send('win:maximized', false))
   win.on('focus', () => {
-    win?.webContents.send('win:focus', true)
+    send('win:focus', true)
     if (visibleSessionId) sessions.acknowledge(visibleSessionId)
   })
-  win.on('blur', () => win?.webContents.send('win:focus', false))
+  win.on('blur', () => send('win:focus', false))
+  win.on('closed', () => (win = null))
   win.on('close', (e) => {
     if (quitting) return
     const running = sessions.runningCount()
@@ -199,7 +236,7 @@ function createWindow(): void {
 }
 
 function buildMenu(): void {
-  const send = (channel: string) => () => win?.webContents.send('menu', channel)
+  const menu = (channel: string) => () => send('menu', channel)
   Menu.setApplicationMenu(
     Menu.buildFromTemplate([
       {
@@ -207,7 +244,7 @@ function buildMenu(): void {
         submenu: [
           { role: 'about', label: 'À propos de SlashCode' },
           { type: 'separator' },
-          { label: 'Paramètres…', accelerator: 'Cmd+,', click: send('settings') },
+          { label: 'Paramètres…', accelerator: 'Cmd+,', click: menu('settings') },
           { type: 'separator' },
           { role: 'hide', label: 'Masquer SlashCode' },
           { role: 'hideOthers', label: 'Masquer les autres' },
@@ -218,13 +255,13 @@ function buildMenu(): void {
       {
         label: 'Fichier',
         submenu: [
-          { label: 'Nouvelle session', accelerator: 'Cmd+T', click: send('new-session') },
-          { label: 'Nouveau projet…', accelerator: 'Cmd+Shift+N', click: send('new-project') },
-          { label: 'Importer depuis Claude…', accelerator: 'Cmd+I', click: send('import') },
+          { label: 'Nouvelle session', accelerator: 'Cmd+T', click: menu('new-session') },
+          { label: 'Nouveau projet…', accelerator: 'Cmd+Shift+N', click: menu('new-project') },
+          { label: 'Importer depuis Claude…', accelerator: 'Cmd+I', click: menu('import') },
           { type: 'separator' },
-          { label: 'Fermer la session', accelerator: 'Cmd+W', click: send('close-session') },
+          { label: 'Fermer la session', accelerator: 'Cmd+W', click: menu('close-session') },
           { type: 'separator' },
-          { label: 'Dicter un prompt', accelerator: 'Cmd+D', click: send('dictate') }
+          { label: 'Dicter un prompt', accelerator: 'Cmd+D', click: menu('dictate') }
         ]
       },
       {
@@ -242,18 +279,18 @@ function buildMenu(): void {
       {
         label: 'Affichage',
         submenu: [
-          { label: 'Exécuter… (aller à)', accelerator: 'Cmd+K', click: send('palette') },
-          { label: 'Poste de travail', accelerator: 'Cmd+Shift+H', click: send('home') },
-          { label: 'Afficher/masquer le volet Notes', accelerator: 'Cmd+J', click: send('toggle-side') },
+          { label: 'Exécuter… (aller à)', accelerator: 'Cmd+K', click: menu('palette') },
+          { label: 'Poste de travail', accelerator: 'Cmd+Shift+H', click: menu('home') },
+          { label: 'Afficher/masquer le volet Notes', accelerator: 'Cmd+J', click: menu('toggle-side') },
           { type: 'separator' },
-          { label: 'Session précédente', accelerator: 'Cmd+Shift+[', click: send('prev-session') },
-          { label: 'Session suivante', accelerator: 'Cmd+Shift+]', click: send('next-session') },
-          { label: 'Prochaine session en attente', accelerator: 'Cmd+Shift+A', click: send('next-attention') },
+          { label: 'Session précédente', accelerator: 'Cmd+Shift+[', click: menu('prev-session') },
+          { label: 'Session suivante', accelerator: 'Cmd+Shift+]', click: menu('next-session') },
+          { label: 'Prochaine session en attente', accelerator: 'Cmd+Shift+A', click: menu('next-attention') },
           { type: 'separator' },
-          { label: 'Une session', accelerator: 'Alt+Cmd+1', click: send('split-1') },
-          { label: 'Deux sessions côte à côte', accelerator: 'Alt+Cmd+2', click: send('split-2') },
-          { label: 'Trois sessions', accelerator: 'Alt+Cmd+3', click: send('split-3') },
-          { label: 'Quatre sessions', accelerator: 'Alt+Cmd+4', click: send('split-4') },
+          { label: 'Une session', accelerator: 'Alt+Cmd+1', click: menu('split-1') },
+          { label: 'Deux sessions côte à côte', accelerator: 'Alt+Cmd+2', click: menu('split-2') },
+          { label: 'Trois sessions', accelerator: 'Alt+Cmd+3', click: menu('split-3') },
+          { label: 'Quatre sessions', accelerator: 'Alt+Cmd+4', click: menu('split-4') },
           { type: 'separator' },
           { role: 'zoomIn', label: 'Agrandir' },
           { role: 'zoomOut', label: 'Réduire' },
@@ -298,7 +335,7 @@ function pollTitles(): void {
     const project = store.data.projects.find((p) => p.id === live.projectId)
     if (!record || !project) continue
     const title = transcriptTitle(project.path, live.id)
-    if (title && title !== record.title) win?.webContents.send('session:title', live.id, title)
+    if (title && title !== record.title) send('session:title', live.id, title)
   }
 }
 
@@ -343,6 +380,25 @@ function registerIpc(): void {
   ipcMain.on('dictation:start', (_e, lang: string) => dictation.start(lang))
   ipcMain.on('dictation:stop', () => dictation.stop())
   ipcMain.on('dictation:cancel', () => dictation.cancel())
+
+  ipcMain.handle('github:all', () => github.all())
+  ipcMain.on('github:watch', (_e, projectId: string | null) => {
+    visibleProjectId = projectId
+    if (projectId) github.touch(projectId)
+  })
+  const pathOf = (projectId: string) => {
+    const p = store.data.projects.find((x) => x.id === projectId)
+    if (!p) throw new Error('Projet introuvable')
+    return p.path
+  }
+  ipcMain.handle('github:refresh', (_e, projectId: string) => github.refresh(projectId))
+  ipcMain.handle('github:jobs', (_e, projectId: string, runId: number) => fetchJobs(pathOf(projectId), runId))
+  ipcMain.handle('github:rerun', async (_e, projectId: string, run: GhRun) => {
+    await rerun(pathOf(projectId), run)
+    github.later(projectId)
+  })
+  ipcMain.handle('github:ci-prompt', (_e, projectId: string, runId: number) => ciPrompt(pathOf(projectId), runId))
+  ipcMain.handle('github:pr-prompt', (_e, projectId: string, num: number) => prPrompt(pathOf(projectId), num))
 
   ipcMain.handle('history:list', (_e, path: string) => listHistory(path))
   ipcMain.handle('history:discover', () => discoverFolders(new Set(store.data.projects.map((p) => p.path))))
@@ -400,6 +456,7 @@ app.whenReady().then(async () => {
   powerMonitor.on('unlock-screen', () => (screenLocked = false))
   createWindow()
   setInterval(pollTitles, 12_000).unref()
+  github.start()
   app.on('activate', showWindow)
 })
 

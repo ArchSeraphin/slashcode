@@ -1358,6 +1358,193 @@ legend {
   text-align: center;
 }
 
+/* ---------- GitHub tab ---------- */
+.gh-repo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-weight: bold;
+}
+.gh-branch {
+  flex: none;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 5px;
+  border: 1px solid #c9c6b4;
+  border-radius: 2px;
+  background: #f4f3ea;
+  font: 11px var(--mono);
+  color: #555;
+}
+.gh-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 5px 8px;
+  border-bottom: 1px dotted #e2dfd2;
+}
+.gh-row > .ico {
+  flex: none;
+  margin-top: 1px;
+}
+.gh-row:hover {
+  background: #eef3ff;
+}
+.gh-row:hover .tactions {
+  opacity: 1;
+}
+.gh-row .tactions {
+  display: flex;
+  gap: 1px;
+  opacity: 0;
+  flex: none;
+}
+.gh-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+.gh-main .htitle {
+  font-weight: bold;
+  color: var(--link);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.gh-main .hmeta {
+  color: #777;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gh-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.gh-tags:not(:empty) {
+  margin-top: 3px;
+}
+.gh-tag {
+  padding: 0 5px;
+  border: 1px solid;
+  border-radius: 2px;
+  font-size: 10px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+.gh-tag.local {
+  color: #1b3f8b;
+  border-color: #8aa7e0;
+  background: #e5edff;
+}
+.gh-tag.draft {
+  color: #555;
+  border-color: #b5b5b5;
+  background: #f0f0f0;
+}
+.gh-tag.ok {
+  color: #1d6d22;
+  border-color: #8fcf93;
+  background: #e8f6e9;
+}
+.gh-tag.warn {
+  color: #8a5300;
+  border-color: #e6bd73;
+  background: #fff3dc;
+}
+.gh-tag.info {
+  color: #173e93;
+  border-color: #9ab4ea;
+  background: #eef3ff;
+}
+.gh-tag.ko {
+  color: #8f2a0d;
+  border-color: #eba48f;
+  background: #fdebe5;
+}
+.gh-run.open > .gh-row {
+  background: #e4ecff;
+}
+.gh-jobs {
+  padding: 3px 8px 6px 31px;
+  border-bottom: 1px dotted #e2dfd2;
+  background: #f6f8fd;
+}
+.gh-jobs.muted {
+  color: #777;
+}
+.gh-job {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+.gh-job:hover .jname {
+  text-decoration: underline;
+}
+.gh-job .ico {
+  flex: none;
+}
+.gh-job .jname {
+  flex: none;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gh-job .jstep {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--error, #c0392b);
+}
+.gh-none {
+  padding: 4px 10px 8px;
+  color: #777;
+}
+.gh-foot {
+  padding: 4px 8px;
+  border-top: 1px solid #e3e1d5;
+  color: var(--faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gh-err {
+  color: var(--error, #c0392b);
+  word-break: break-word;
+}
+.empty code {
+  font: 11px var(--mono);
+  padding: 0 3px;
+  background: #f0efe6;
+  border: 1px solid #dcd9ca;
+}
+.ci-dot {
+  display: inline-flex;
+  cursor: pointer;
+}
+
 /* ---------- home ("Poste de travail") ---------- */
 .home {
   flex: 1;

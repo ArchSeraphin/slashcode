@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   allOpenSessions,
   gotoSession,
+  openGithub,
   goHome,
   newSession,
   openProject,
@@ -207,6 +208,8 @@ function StartMenu() {
   )
 }
 
+const BALLOON_ICON = { warning: 'warning', done: 'info', success: 'check', error: 'fail' } as const
+
 function BalloonTip() {
   const b = useStore((s) => s.ui.balloon!)
   useEffect(() => {
@@ -217,12 +220,13 @@ function BalloonTip() {
     <div
       className="balloon"
       onClick={() => {
-        gotoSession(b.sessionId)
+        if (b.sessionId) gotoSession(b.sessionId)
+        else if (b.projectId) openGithub(b.projectId)
         setUI({ balloon: null })
       }}
     >
       <div className="bhead">
-        <Icon name={b.tone === 'warning' ? 'warning' : 'info'} size={16} />
+        <Icon name={BALLOON_ICON[b.tone]} size={16} />
         {b.title}
         <button
           className="x"

@@ -3,6 +3,7 @@ import type { Api } from '../../preload'
 import type {
   AppData,
   DictationEvent,
+  GhStatus,
   Group,
   LaunchOptions,
   LiveSession,
@@ -38,13 +39,14 @@ export type DialogState =
       onOk: () => void
     }
 
-export type SideTab = 'tasks' | 'notes' | 'history'
+export type SideTab = 'tasks' | 'notes' | 'history' | 'github'
 
 export interface Balloon {
-  sessionId: string
+  sessionId?: string
+  projectId?: string // a finished CI run: the balloon opens the project's GitHub tab
   title: string
   body: string
-  tone: 'warning' | 'done'
+  tone: 'warning' | 'done' | 'success' | 'error'
 }
 
 export interface Dictation {
@@ -79,6 +81,7 @@ export interface State {
   data: AppData | null
   live: Record<string, LiveSession>
   usage: Usage | null
+  github: Record<string, GhStatus> // projectId -> last status fetched this run
   ui: UIState
 }
 
@@ -86,6 +89,7 @@ let state: State = {
   data: null,
   live: {},
   usage: null,
+  github: {},
   ui: {
     view: 'home',
     projectId: null,
@@ -147,6 +151,11 @@ export function setUsage(usage: Usage): void {
   emit()
 }
 
+export function setGithub(projectId: string, status: GhStatus): void {
+  state = { ...state, github: { ...state.github, [projectId]: status } }
+  emit()
+}
+
 export function dropLive(id: string): void {
   if (!state.live[id]) return
   const live = { ...state.live }
@@ -156,10 +165,16 @@ export function dropLive(id: string): void {
 }
 
 export async function init(): Promise<void> {
-  const [data, live, win, usage] = await Promise.all([api.loadData(), api.listLive(), api.winState(), api.usage()])
+  const [data, live, win, usage, github] = await Promise.all([
+    api.loadData(),
+    api.listLive(),
+    api.winState(),
+    api.usage(),
+    api.githubAll()
+  ])
   const liveMap: Record<string, LiveSession> = {}
   for (const l of live) liveMap[l.id] = l
-  state = { ...state, data, live: liveMap, usage, ui: { ...state.ui, maximized: win.maximized, focused: win.focused } }
+  state = { ...state, data, live: liveMap, usage, github, ui: { ...state.ui, maximized: win.maximized, focused: win.focused } }
   emit()
   if (!data.projects.length) setUI({ dialog: { kind: 'import', firstRun: true } })
 }
@@ -193,6 +208,11 @@ export function openProject(projectId: string, sessionId?: string): void {
     startOpen: false,
     activeSession: sessionId ? { ...ui.activeSession, [projectId]: sessionId } : ui.activeSession
   }))
+}
+
+export function openGithub(projectId: string): void {
+  openProject(projectId)
+  setUI({ sideTab: 'github', sideOpen: true })
 }
 
 export function goHome(): void {
@@ -598,6 +618,24 @@ export function sendToActiveSession(projectId: string, text: string): boolean {
   // Bracketed paste keeps multi-line text in one prompt instead of submitting each line.
   api.write(sid, `\x1b[200~${text}\x1b[201~`)
   return true
+}
+
+/**
+ * Hands a prompt to Claude: typed into the project's active session for a last look,
+ * or, when none is running, a new session started on it.
+ */
+export function handToClaude(projectId: string, text: string, title: string): void {
+  if (sendToActiveSession(projectId, text)) {
+    openProject(projectId)
+    refocus(state.ui.activeSession[projectId])
+    return
+  }
+  newSession(projectId, { prompt: text, title })
+}
+
+/** Errors thrown in the main process reach us wrapped in Electron's own sentence. */
+export function errorText(err: unknown): string {
+  return String((err as Error)?.message ?? err).replace(/^Error invoking remote method '[^']+': (?:Error: )?/, '')
 }
 
 /* ---------------- formatting ---------------- */

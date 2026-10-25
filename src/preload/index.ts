@@ -1,5 +1,17 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
-import type { AppData, DictationEvent, DiscoveredFolder, HistoryEntry, LaunchOptions, LiveSession, NotifyTestResult, Usage } from '@shared/types'
+import type {
+  AppData,
+  DictationEvent,
+  DiscoveredFolder,
+  GhJob,
+  GhRun,
+  GhStatus,
+  HistoryEntry,
+  LaunchOptions,
+  LiveSession,
+  NotifyTestResult,
+  Usage
+} from '@shared/types'
 
 function on<T extends unknown[]>(channel: string, cb: (...args: T) => void): () => void {
   const listener = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...(args as T))
@@ -26,6 +38,17 @@ const api = {
   dictationStop: () => ipcRenderer.send('dictation:stop'),
   dictationCancel: () => ipcRenderer.send('dictation:cancel'),
   onDictation: (cb: (e: DictationEvent) => void) => on('dictation:event', cb),
+
+  githubAll: (): Promise<Record<string, GhStatus>> => ipcRenderer.invoke('github:all'),
+  githubWatch: (projectId: string | null) => ipcRenderer.send('github:watch', projectId),
+  githubRefresh: (projectId: string): Promise<GhStatus> => ipcRenderer.invoke('github:refresh', projectId),
+  githubJobs: (projectId: string, runId: number): Promise<GhJob[]> => ipcRenderer.invoke('github:jobs', projectId, runId),
+  githubRerun: (projectId: string, run: GhRun): Promise<void> => ipcRenderer.invoke('github:rerun', projectId, run),
+  githubCiPrompt: (projectId: string, runId: number): Promise<string> => ipcRenderer.invoke('github:ci-prompt', projectId, runId),
+  githubPrPrompt: (projectId: string, num: number): Promise<string> => ipcRenderer.invoke('github:pr-prompt', projectId, num),
+  onGithub: (cb: (projectId: string, status: GhStatus) => void) => on('github:status', cb),
+  onGithubFinished: (cb: (projectId: string, run: GhRun) => void) => on('github:finished', cb),
+  onGithubGoto: (cb: (projectId: string) => void) => on('ui:github', cb),
 
   history: (path: string): Promise<HistoryEntry[]> => ipcRenderer.invoke('history:list', path),
   discover: (): Promise<DiscoveredFolder[]> => ipcRenderer.invoke('history:discover'),

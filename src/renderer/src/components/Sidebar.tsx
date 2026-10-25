@@ -6,6 +6,7 @@ import {
   gotoSession,
   moveGroup,
   newSession,
+  openGithub,
   openProject,
   patchGroup,
   patchProject,
@@ -19,12 +20,14 @@ import {
 import { Icon } from './Icon'
 import { useMenu, type MenuItem } from './Menu'
 import { StatusIcon } from './StatusIcon'
+import { CiIcon, ciSummary, ciTooltip } from './GitHub'
 
 const UNGROUPED = '__none'
 
 export function Sidebar() {
   const data = useStore((s) => s.data!)
   const live = useStore((s) => s.live)
+  const github = useStore((s) => s.github)
   const ui = useStore((s) => s.ui)
   const menu = useMenu()
   const [dragId, setDragId] = useState<string | null>(null)
@@ -130,6 +133,7 @@ export function Sidebar() {
 
   const row = (p: Project, showPath = false) => {
     const st = stats.get(p.id)
+    const ci = ciSummary(github[p.id])
     const active = ui.view === 'project' && ui.projectId === p.id
     return (
       <button
@@ -157,6 +161,18 @@ export function Sidebar() {
         </span>
         <span className="badges">
           {p.favorite && !showPath && <Icon name="star" size={11} />}
+          {ci && (
+            <span
+              className="ci-dot"
+              title={ciTooltip(ci) + '\nClic : onglet GitHub'}
+              onClick={(e) => {
+                e.stopPropagation()
+                openGithub(p.id)
+              }}
+            >
+              <CiIcon state={ci.state} size={12} />
+            </span>
+          )}
           {st?.attention ? <span className="badge attn">{st.attention}</span> : null}
           {st?.live ? <span className="badge live">{st.live}</span> : null}
         </span>

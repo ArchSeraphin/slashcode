@@ -8,8 +8,10 @@ import {
   goHome,
   newSession,
   onDictationEvent,
+  openGithub,
   openSessionsOf,
   setSplit,
+  setGithub,
   setLive,
   setUsage,
   setUI,
@@ -111,6 +113,11 @@ export function App() {
     return () => mq.removeEventListener('change', apply)
   }, [appearance])
 
+  // The project on screen is polled more often, so its GitHub tab stays current.
+  useEffect(() => {
+    api.githubWatch(ui.view === 'project' ? ui.projectId : null)
+  }, [ui.view, ui.projectId])
+
   useEffect(() => {
     const offs = [
       api.onUpdate((info) => {
@@ -146,6 +153,24 @@ export function App() {
         if (st.data?.settings.notifySound) chime(tone)
       }),
       api.onGoto((id) => gotoSession(id)),
+      api.onGithub(setGithub),
+      api.onGithubGoto(openGithub),
+      api.onGithubFinished((projectId, run) => {
+        const st = getState()
+        if (!st.data?.settings.notifyCi) return
+        const p = st.data.projects.find((x) => x.id === projectId)
+        const ok = run.state === 'success'
+        const verdict = ok ? 'CI réussie' : run.state === 'failure' ? 'CI en échec' : 'CI annulée'
+        setUI({
+          balloon: {
+            projectId,
+            title: `${p?.name ?? 'GitHub'} · ${verdict}`,
+            body: `${run.workflow} sur ${run.branch}\n${run.title}`,
+            tone: ok ? 'success' : run.state === 'failure' ? 'error' : 'done'
+          }
+        })
+        if (st.data.settings.notifySound) chime(ok ? 'done' : 'warning')
+      }),
       api.onDictation(onDictationEvent),
       api.onMenu(runMenu),
       api.onMaximized((maximized) => setUI({ maximized })),

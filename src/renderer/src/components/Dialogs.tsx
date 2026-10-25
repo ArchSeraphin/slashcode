@@ -197,6 +197,10 @@ function SettingsDialog() {
           <input type="checkbox" checked={settings.notifySound} onChange={(e) => set({ notifySound: e.target.checked })} />
           Jouer un son
         </label>
+        <label className="check-row">
+          <input type="checkbox" checked={settings.notifyCi} onChange={(e) => set({ notifyCi: e.target.checked })} />
+          Prévenir quand un workflow GitHub Actions se termine (projets ouverts ou avec une session)
+        </label>
         <div className="hint" style={{ margin: '4px 0 6px' }}>
           Rien n’est envoyé pour la session que tu as sous les yeux. macOS demande l’autorisation à la première
           notification ; si rien ne s’affiche, autorise SlashCode dans les réglages.

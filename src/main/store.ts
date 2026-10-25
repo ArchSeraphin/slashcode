@@ -22,7 +22,8 @@ const DEFAULT_SETTINGS: Settings = {
   phoneServer: 'https://ntfy.sh',
   phoneTopic: '',
   phoneWhen: 'away',
-  dictationLang: 'fr-FR'
+  dictationLang: 'fr-FR',
+  notifyCi: true
 }
 
 // The topic name is the only secret on a public ntfy server, so make it unguessable.

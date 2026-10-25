@@ -18,17 +18,23 @@ import {
   useStore,
   type SideTab
 } from '../store'
+import { GitHubPanel } from './GitHub'
 import { Icon } from './Icon'
 
 export function SidePanel({ project }: { project: Project }) {
-  const tab = useStore((s) => s.ui.sideTab)
+  const picked = useStore((s) => s.ui.sideTab)
   const tasks = useStore((s) => s.data!.tasks)
+  const gh = useStore((s) => s.github[project.id])
   const openCount = tasks.filter((t) => t.projectId === project.id && !t.done).length
-  const tabs: { id: SideTab; label: string; icon: 'tasks' | 'notepad' | 'history' }[] = [
+  // Folders without a GitHub remote have no GitHub tab.
+  const hasGithub = Boolean(gh && gh.state !== 'no-repo')
+  const tab = picked === 'github' && !hasGithub ? 'tasks' : picked
+  const tabs: { id: SideTab; label: string; icon: 'tasks' | 'notepad' | 'history' | 'pr' }[] = [
     { id: 'tasks', label: openCount ? `Tâches (${openCount})` : 'Tâches', icon: 'tasks' },
     { id: 'notes', label: 'Notes', icon: 'notepad' },
     { id: 'history', label: 'Historique', icon: 'history' }
   ]
+  if (hasGithub) tabs.push({ id: 'github', label: 'GitHub', icon: 'pr' })
   return (
     <aside className="side">
       <div className="side-tabs tabs" style={{ height: 'auto' }}>
@@ -43,6 +49,7 @@ export function SidePanel({ project }: { project: Project }) {
         {tab === 'tasks' && <Tasks project={project} />}
         {tab === 'notes' && <Notes project={project} />}
         {tab === 'history' && <History project={project} />}
+        {tab === 'github' && <GitHubPanel project={project} />}
       </div>
     </aside>
   )

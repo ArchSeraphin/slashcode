@@ -81,6 +81,7 @@ export interface Settings {
   phoneTopic: string
   phoneWhen: 'away' | 'always'
   dictationLang: string
+  notifyCi: boolean
 }
 
 export interface NotifyTestResult {
@@ -191,5 +192,57 @@ export type DictationEvent =
   | { type: 'partial'; text: string }
   | { type: 'final'; text: string }
   | { type: 'error'; code: string; message: string }
+
+/** A check, a workflow run or a job, reduced to what the UI draws. */
+export type CiState = 'success' | 'failure' | 'pending' | 'neutral'
+
+export interface GhPull {
+  number: number
+  title: string
+  author: string
+  branch: string
+  draft: boolean
+  review: 'approved' | 'changes' | 'required' | null
+  checks: CiState | null // null: no checks on this PR
+  failing: string[] // names of the failing checks
+  url: string
+  updatedAt: number
+}
+
+export interface GhRun {
+  id: number
+  workflow: string
+  title: string
+  branch: string
+  event: string
+  state: CiState
+  running: boolean // queued or in progress
+  url: string
+  startedAt: number
+  updatedAt: number
+}
+
+export interface GhJob {
+  id: number
+  name: string
+  state: CiState
+  running: boolean
+  url: string
+  failedSteps: string[]
+}
+
+/**
+ * no-gh: the GitHub CLI is not installed; no-auth: it is not logged in;
+ * no-repo: the folder has no GitHub remote (the panel tab is hidden).
+ */
+export interface GhStatus {
+  state: 'loading' | 'ok' | 'no-gh' | 'no-auth' | 'no-repo' | 'error'
+  repo: string // owner/name
+  branch: string // the local branch checked out in the folder
+  prs: GhPull[]
+  runs: GhRun[]
+  error: string
+  updatedAt: number
+}
 
 export const ATTENTION_STATUSES: LiveStatus[] = ['permission', 'done']

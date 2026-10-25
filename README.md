@@ -20,6 +20,7 @@ Quand on jongle avec cinq ou six projets et plusieurs sessions Claude dans chacu
 - **Tâches** par projet : le bouton ▶ lance une tâche comme premier message d'une nouvelle session, ➤ l'écrit dans la session active.
 - **Notes** par projet, enregistrées automatiquement, envoyables à la session active.
 - **Historique** des conversations Claude du dossier, reprise en un clic.
+- **GitHub** sans quitter l'app : un onglet GitHub (pour les dossiers reliés à un dépôt GitHub) liste les pull requests ouvertes avec leurs checks et l'état de la revue, et les derniers workflows GitHub Actions. Un run se déplie pour montrer ses jobs et les étapes en échec. Le bouton ➤ envoie à Claude la fin du log d'un run en échec, ou les commentaires de revue d'une PR (ou lui demande de la relire) : c'est tapé dans la session active, ou une nouvelle session démarre dessus. On peut aussi relancer les jobs en échec. Une pastille dans la barre latérale montre l'état de la CI, et une bulle prévient quand un run se termine. Tout passe par le client `gh` déjà connecté (`brew install gh`, puis `gh auth login`), sans jeton à saisir.
 - **Notifications** quand Claude demande une autorisation ou a fini son tour : notification macOS, bulle XP, bouton de la barre des tâches qui clignote, badge du Dock, et en option sur iPhone.
 - **Peu de clics** : double-clic sur un projet pour lancer Claude, `⌘K` pour aller n'importe où, `⌘⇧A` pour sauter à la prochaine session qui attend.
 
@@ -64,6 +65,10 @@ Pour développer : `npm run dev` (rechargement à chaud) et `npm run typecheck`.
 Le contenu dit ce qui se passe : pour une autorisation, l'outil et la commande ou le fichier visé ; pour une fin de tour, le début de la réponse de Claude, le modèle et la durée.
 
 Fermer la fenêtre avec des sessions en cours propose de les garder en arrière-plan : les notifications continuent d'arriver.
+
+## Comment marche l'onglet GitHub
+
+SlashCode lit le remote GitHub du dossier (`git remote -v`) puis interroge GitHub avec `gh pr list` et `gh run list`. Seuls les projets en cours d'usage sont suivis : celui qui est à l'écran (toutes les minutes, toutes les 10 s pendant un run) et ceux qui ont une session ouverte (toutes les 3 min, toutes les 20 s pendant un run). On reste très loin du quota de l'API GitHub. La bulle de fin de run se coupe dans Paramètres > Notifications.
 
 ## Dictée
 
